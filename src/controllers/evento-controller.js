@@ -1,12 +1,13 @@
 import Express from "express"
 const eventoController = Express.Router()
-import eventoService from "../service/evento-service"
+import EventoService from "../service/evento-service"
 var evento = {
     nombre:"",
     categoria:"",
     fechaDeInicio:"",
     tag:"",
 }
+    const eventoService=new Eventos()
 
 eventoController.get("/",(req,res)=>{
     const pageSize=4
@@ -27,3 +28,10 @@ eventoController.get("/",(req,res)=>{
     return res.json(allEvents)
 
 })  
+
+eventoController.get("/:id", (req,res) =>{
+    const id = req.params.id
+    const evento = eventoService.getEventoById(id) 
+    res.json(evento)
+
+})
