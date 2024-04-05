@@ -1,5 +1,5 @@
 import express from "express";
-import controller from "./src/controllers/evento-controller.js";
+import eventoController from "./src/controllers/evento-controller.js";
 
 const app = express(); // Init API REST
 app.use(express.json()); // Middleware to parse JSON

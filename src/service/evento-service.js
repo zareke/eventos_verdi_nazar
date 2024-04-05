@@ -1,16 +1,44 @@
-export class Eventos{
+export default class Eventos{
     getAllEventos(pageSize, requestedPage, evento) {
-        var query = `select * from events limit ${pageSize}`;
+        //DATOS HARDCODEADOS ESTO HAY Q PONERLO DSPS
+        /* 
+        var query = `select * from events limit ${pageSize}`; //aca hay que hacer un recontra innerjoin para traer todo
         var query2 = 'select count (*) from events' //si hay un error capaz es q estan las ' en lugar de ´
-        //const eventsInDB = query.execute()
+        const eventsInDB = query.execute()
+        */
+       var datoshardcodeados=
+       [{
+        name:"lalapalaza",
+        description:"lolapaloza2",
+        location:"hipodromo de san isidro",
+        fecha:"21/8/2020",
+        duracion:"3", //asumiendo q la duracion es en horas
+        precio:"$20000",
+        habilitado:false,
+        capacidad:"60000",
+        creador:"zareke"
+       },
+       {
+        name:"rubenrada",
+        description:"concierto ruben rada",
+        location:"luna park",
+        fecha:"21/8/2020",
+        duracion:"3", //asumiendo q la duracion es en horas
+        precio:"$20000",
+        habilitado:false,
+        capacidad:"60000",
+        creador:"zareke"
+       }
+       
+        ]
 
         return {
-          collection: query, //es posible que aca vaya eventsInDB
+          collection: datoshardcodeados/*query*/, //es posible que aca vaya eventsInDB
           pagination: {
             limit: pageSize,
             offset: requestedPage,
             nextPage: "http://localhost:3000/event?limit=15&offset=1",
-            total: query2,
+            total: /*query2*/ 299998,
           },
         };
       }
