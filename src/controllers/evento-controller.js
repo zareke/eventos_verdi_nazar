@@ -1,7 +1,7 @@
 import Express from "express";
 const eventoController = Express.Router();
 import Eventos from "../service/evento-service.js";
-var evento = {
+var evento = { //filtros
   nombre: "",
   categoria: "",
   fechaDeInicio: "",
@@ -9,21 +9,24 @@ var evento = {
 };
 
 const eventoService = new Eventos();
-
+//nota: aparentemente hay que validar TODO
 eventoController.get("/", (req, res) => {
   const pageSize = 4;
   const page = req.query.page;
+  var allEvents
+
   evento.nombre = req.query.nombre;
   evento.categoria = req.query.categoria;
   evento.fechaDeInicio = req.query.fechaDeInicio;
   evento.tag = req.query.tag;
-  const allEvents = eventoService.getAllEventos(pageSize, page);
-/*
-  if (Object.keys(evento).length === 0) {
-    const allEvents = eventoService.getAllEventos(pageSize, page);
+
+  var noHayFiltros
+  Object.values(evento).forEach(i => i!==null || i!=="")
+  if (noHayFiltros) {
+    allEvents = eventoService.getAllEventos(pageSize, page);
   } else {
-    const allEvents = eventoService.getAllEventosFiltrado(pageSize, page);
-  }*/
+    allEvents = eventoService.getAllEventosFiltrado(pageSize, page);
+  }
 
   return res.json(allEvents);
 });
