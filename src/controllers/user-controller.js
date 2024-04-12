@@ -1,40 +1,56 @@
-import Express from "express"
-const userController = Express.Router()
+import Express from "express";
+const userController = Express.Router();
 // import Eventos from "../service/evento-service.js" // que importe el service de user
 // const eventoService = new Eventos()
 
 //hola zarek y dante del futuro les dejo comentarios para que entiendan mi codigo a la hora de hacer el service -dante del pasado
 
-userController.post("/login", (req,res) =>{
-    
-    const token = (Math.random() + 1).toString(36).substring(7)
-    correct = userService.Login(req.query.username,req.query.password,token) //guarda en la bd un token asociado al usuario si la password esta correct y devuelve true si es correct
-    
-    if (correct) {res.json("Token: " , token)}
-    e
-})
+userController.post("/login", (req, res) => {
+  const token = (Math.random() + 1).toString(36).substring(7); //el token no se cuando se usa y etc
+  let correct;
+  // correct = userService.Login(req.query.username,req.query.password) //devuelve  true o false si ando o no andó
+  correct = false; //BORRAR CUANDO HAGAMOS EL SERVICE BORRAR
+  if (correct) {
+    return res.status(201).send({
+      token: token,
+    });
+  } else {
+    return res.status(403).send({
+      reason: "Usuario o contraseña no validos",
+    });
+  }
+});
 
-userController.post("/register", (req,res) => {
-    let error=false
-    let first_name=(typeof req.query.first_name == "string") ? req.query.first_name : error = true
-    let last_name= (typeof req.query.last_name == "string") ? req.query.last_name : error = true
-    //let username= (userService.UsernameExists(req.query.username)) ? req.query.username : error = true //username exists es una funcion imaginaria que deveulve true o false si el usuario ya existe bastante self explanatory
-    let username = req.query.username //temporal
-    let contraseña=req.query.password
-    let password=(contraseña.length>7 && typeof contraseña == "string" && /\d/.test(contraseña) ) ? contraseña : error = "la contraseña es no valida" //la cosa mas obscure que vi en mi vida javascript es ese /\d/ rarisimo
-    
-    if (error==false){
-        return res.json("perfectou")
-        //userService.Register(first_name,last_name,username,password)
-    }
-    else if (error=="la contraseña es no valida"){
-        
-        return res.json(error)
-    }
-    else {
-        console.log("datardos no validardos")
-        return res.json("datos no validos")
-    }
-})
+userController.post("/register", (req, res) => {
+  let error = false;
+  let first_name =
+    typeof req.body.first_name == "string"
+      ? req.body.first_name
+      : (error = true);
+  let last_name =
+    typeof req.body.last_name == "string" ? req.body.last_name : (error = true);
+  //let username= (userService.UsernameExists(req.body.username)) ? req.body.username : error = true //username exists es una funcion imaginaria que deveulve true o false si el usuario ya existe bastante self explanatory
+  let username = req.body.username; //temporal
+  let contraseña = req.body.password;
+  let password =
+    contraseña.length > 7 &&
+    typeof contraseña == "string" &&
+    /\d/.test(contraseña)
+      ? contraseña
+      : (error = "la contraseña es no valida"); //la cosa mas obscure que vi en mi vida javascript es ese /\d/ rarisimo
 
-export default userController
+  if (error == false) {
+    return res.status(201);
+    //userService.Register(first_name,last_name,username,password)
+  } else if (error == "la contraseña es no valida") {
+    return res.status(400).send({
+      reason: "contraseña no valida",
+    });
+  } else {
+    return res.status(400).send({
+      reason: "datos no validos",
+    });
+  }
+});
+
+export default userController;

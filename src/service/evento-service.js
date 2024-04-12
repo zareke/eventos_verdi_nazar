@@ -99,7 +99,7 @@ export default class Eventos {
     var query = `select * from events where id=${id}`;
     return query;
   }
-
+uId
   postNewEnrollment(
     userId,
     eventoId,
@@ -112,6 +112,27 @@ export default class Eventos {
       id: 2,
       id_event: eventoId,
       id_user: userId,
+      descripcion: description,
+      registration_date_time: new Date().toDateString,
+      attended: attended,
+      observations: observations,
+      rating: rating,
+    };
+uId = userId
+    return enrollment
+  }
+
+  patchEnrollment(
+    eventoId,
+    description,
+    attended,
+    observations,
+    rating
+  ) {
+    const enrollment = {
+      id: 2,
+      id_event: eventoId,
+      id_user: this.uId,
       descripcion: description,
       registration_date_time: new Date().toDateString,
       attended: attended,
