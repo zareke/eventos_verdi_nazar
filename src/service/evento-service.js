@@ -129,6 +129,7 @@ export default class Eventos {
     observations,
     rating
   ) {
+   
     const enrollment = {
       id: eventoId,
       id_event: eventoId,
