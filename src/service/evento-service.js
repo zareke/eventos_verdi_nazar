@@ -1,6 +1,6 @@
 export default class Eventos {
   getAllEventos(pageSize, requestedPage, evento) {
-    //DATOS HARDCODEADOS ESTO HAY Q PONERLO DSPS
+    //DATOS HARDCODEADO S ESTO HAY Q PONERLO DSPS
     /* 
         var query = `select * from events limit ${pageSize}`; //aca hay que hacer un recontra innerjoin para traer todo
         var query2 = 'select count (*) from events' //si hay un error capaz es q estan las ' en lugar de ´
@@ -99,7 +99,7 @@ export default class Eventos {
     var query = `select * from events where id=${id}`;
     return query;
   }
-uId
+
   postNewEnrollment(
     userId,
     eventoId,
@@ -109,7 +109,7 @@ uId
     rating
   ) {
     const enrollment = {
-      id: 2,
+      id: eventoId,
       id_event: eventoId,
       id_user: userId,
       descripcion: description,
@@ -118,7 +118,7 @@ uId
       observations: observations,
       rating: rating,
     };
-uId = userId
+
     return enrollment
   }
 
@@ -130,9 +130,9 @@ uId = userId
     rating
   ) {
     const enrollment = {
-      id: 2,
+      id: eventoId,
       id_event: eventoId,
-      id_user: this.uId,
+      id_user: 5,
       descripcion: description,
       registration_date_time: new Date().toDateString,
       attended: attended,

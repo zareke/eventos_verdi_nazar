@@ -55,28 +55,12 @@ else
 return res.json("datos no validos")
 })
 
-eventoController.post("/:id/enrollment", (req, res) => {
 
-  if(!(Number.isInteger(Number(req.query.userId)) && Number.isInteger(Number(req.params.id)) && Number.isInteger(Number(req.query.attended)) && Number.isInteger(Number(req.query.rating)))) 
-  return res.json("datos no validos")
-  
-    const user = req.query.userId
-    const evento = req.params.id
-    const descripcion = req.query.descripcion
-    const attended = req.query.attended
-    const observations = req.query.observations
-    const rating = req.query.rating
-    const enrollment = eventoService.postNewEnrollment(user, evento, descripciion, attended, observations, rating)
-    return res.json(enrollment)
-  
-  
- 
-  })
 
   eventoController.post("/:id/enrollment", (req, res) => { 
 
     if(!(/*comentario para zarek dormidoa para que no rompa el codigo gracias aunque ya lo rompi ahre */Number.isInteger(Number(req.query.userId)) && Number.isInteger(Number(req.params.id)))) 
-   { return res.json(req.query.userId) + " " + req.params.id}
+   { return res.json(req.params.id)}
     
       const user = req.query.userId
       const evento = req.params.id
