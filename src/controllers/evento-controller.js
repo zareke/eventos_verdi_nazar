@@ -14,31 +14,32 @@ eventoController.get("/", (req, res) => {
   const pageSize = 4
   const page = req.query.page
   var allEvents
-
+  let error = false
+  Object.values(evento).forEach(i=>i="")
   //LAS VALIDACIONES MITICAS
-    
-    Object.values(evento).forEach(i=>i="")
-
-    let error = false
-
-    evento.nombre = (typeof req.query.nombre)!=='string' ? req.query.nombre : error=true
+  evento.nombre = (typeof req.query.nombre)!=='string' || evento.nombre==null ? req.query.nombre : error=true
   
-    evento.categoria = (typeof req.query.categoria)!=='string' ? req.query.categoria : error=true
+    evento.categoria = (typeof req.query.categoria)!=='string' || evento.categoria==null ? req.query.categoria : error=true
     
-    evento.fechaDeInicio = !isNaN(new Date(req.query.fechaDeInicio)) ? req.query.fechaDeInicio : error=true
+    evento.fechaDeInicio = !isNaN(new Date(req.query.fechaDeInicio)) ||evento.fechaDeInicio==null ? req.query.fechaDeInicio : error=true
 
-    evento.rag = (typeof req.query.tag)!=='string' ? req.query.tag : error=true
+    evento.rag = (typeof req.query.tag)!=='string' || evento.rag == null? req.query.tag : error=true
 
-    if(error){
+  
+console.log(evento.fechaDeInicio)
+if(!Object.values(evento).find((i) => i!= null || i!=undefined || i!="")){
+  allEvents = eventoService.getAllEventos(pageSize, page)
+  return res.json(allEvents)
+}
+
+if(error){
         return res.json("Datos no validos")
     }
   
   var noHayFiltros = true
-  if(!Object.values(evento).find((i) => i!= null || i!=undefined || i!="")) {
-    allEvents = eventoService.getAllEventos(pageSize, page)
-  } else {
+ 
     allEvents = eventoService.getAllEventosFiltrado(pageSize, page) //no le mandamos los flitros mepa lol
-  }
+  
 
   return res.json(allEvents)
 })
@@ -89,5 +90,7 @@ return res.json("datos no validos")
       return res.json(enrollment)
     })
 
+   
+    
 
 export default eventoController

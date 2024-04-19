@@ -96,7 +96,8 @@ export default class Eventos {
   }
 
   getEventoById(id) {
-    var query = `select * from events where id=${id}`;
+   // var query = `select * from events where id=${id}`;
+   var query = "FUTURA QUERY"
     return query;
   }
 
