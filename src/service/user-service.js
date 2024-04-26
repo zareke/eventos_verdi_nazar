@@ -16,7 +16,7 @@ export default class  Users {
         const query = `insert into user values (${fn},${ln},${u},${p})`
     }
 
-    ObtenerEventosByUserFilters(first_name,last_name,username,attended,rating,pageSize,page, eventFromId){
+    ObtenerUserByEventId(first_name,last_name,username,attended,rating,pageSize,page, eventFromId){
         let datoshardcodeados = [
             {
                 "first_name":first_name,

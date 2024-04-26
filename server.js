@@ -10,7 +10,7 @@ const port = 4587;
 
 app.use("/event", eventoController);
 app.use("/user",userController)
-app.use("/provincia",provinciaController)
+app.use("/province",provinciaController)
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`); 

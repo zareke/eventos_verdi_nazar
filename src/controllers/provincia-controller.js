@@ -9,13 +9,18 @@ const provinciaService = new Provincias();
 //nota: aparentemente hay que validar TODO
 provinciaController.get("/", (req, res) => {
 
-  id = provinciaService.ChequearProvinciaExiste(req.params.id)
+  let id = Number(req.params.id)
+   
+
+  if (id != null & !provinciaService.ChequearProvinciaExiste(req.params.id)) //Chequea si existe provincia
+  return res.json("Ese id no existe")
+
   if (id) {
-    let province = provinciaService.SearchProvinceById(id) //funcion que crea provincias
+    let province = provinciaService.SearchProvinceById(id) 
     return res.json(province)
     
   }  else {
-    let provinces = provinciaService.SearchProvinces(id) //funcion que crea provincias
+    let provinces = provinciaService.SearchProvinces() 
     return res.json(provinces)
   }
 
@@ -88,7 +93,7 @@ let latitude = Number(req.body.latitude)
          : (error = true); 
          console.log("rat" + error)
   if (error == false) {
-    let province = provinciaService.EditarPorId(name,full_name,latitude,longitude,dO,req.params.id) //funcion que crea provincias
+    let province = provinciaService.EditarPorId(name,full_name,latitude,longitude,dO,req.params.id) //funcion que edita
     return res.json(province)
     
   }  else {

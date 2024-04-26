@@ -74,4 +74,8 @@ export default class Provincias {
     };
     return datoshardcodeados;
   }
+  ChequearProvinciaExiste(id){
+    //La super query iria aca
+    return true
+  }
 }

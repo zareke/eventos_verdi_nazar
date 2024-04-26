@@ -60,41 +60,10 @@ userController.post("/register", (req, res) => {
 userController.get("/:id", (req, res) => {
   const pageSize = 4
   const page = req.query.page
-  let error = false
-  let first_name =
-    typeof req.query.first_name == "string"
-      ? req.query.first_name
-      : (error = true);
-      console.log("name" + error)
-  let last_name =
-    typeof req.query.last_name == "string" ? req.query.last_name : (error = true);
-    let username =
-    typeof req.query.username == "string"
-      ? req.query.username
-      : (error = true);
-      console.log("user" + error)
-  let attended = Boolean(req.query.attended)
-   attended =
-    typeof attended == "boolean" 
-      ? attended
-      : (error = true);
-      console.log("att" + error)
-      let rating = Number(req.query.rating)
-      rating =
-       typeof rating == "number" 
-         ? rating
-         : (error = true); 
-         console.log("rat" + error)
-  if (error == false) {
-    let filteredEventFromUsers = userService.ObtenerEventosByUserFilters(first_name,last_name,username,attended,rating,pageSize,page, req.params.id) //funcion que retorna los pibes de la BD segun la bd
+ 
+    let filteredEventFromUsers = userService.ObtenerUserByEventId(req.query.first_name,req.query.last_name,req.query.username,req.query.attended,req.query.rating,pageSize,page, req.params.id) //funcion que retorna los pibes de la BD segun la bd
     return res.json(filteredEventFromUsers)
-    
-  }  else {
-    return res.status(400).send({
-      
-      reason: "Datos no validos",
-    });
-  }
+
 
 })
 
