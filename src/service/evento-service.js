@@ -122,7 +122,16 @@ export default class Eventos {
 
     return enrollment
   }
-
+  PostEvent(object)
+  {
+      //la increible magistrar query en vez de esto
+      return object
+  }
+  EditEvent(id,object)
+  {
+      //la increible magistrar query en vez de esto
+      return object
+  }
   patchEnrollment(
     eventoId,
     description,

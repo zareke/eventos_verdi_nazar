@@ -113,6 +113,61 @@ eventoController.post("/", (req, res) => {
     return res.json(eventoService.PostEvent(object)); // funcion que crea evento
   }
 });
+eventoController.patch("/:id", (req, res) => {
+  let error = false;
+  let name = typeof req.body.name == "string" ? req.body.name : (error = true);
+  console.log("name" + error);
+  let description =
+    typeof req.body.description == "string"
+      ? req.body.description
+      : (error = true);
+  let id_event_category = Number(req.body.id_event_category);
+  id_event_category =
+    id_event_category == "null" ? req.body.id_event_category : (error = true);
+  console.log("user" + error);
+  let id_event_location = Number(req.body.id_event_location);
+  id_event_location =
+    id_event_location == "null" ? id_event_location : (error = true);
+  console.log("att" + error);
+  let start_date = Date.parse(req.body.start_date); 
+  start_date = !isNaN(start_date) ? req.body.start_date : (error = true);
+  let duration_in_minutes = Number(req.body.duration_in_minutes);
+  duration_in_minutes =
+    duration_in_minutes == "null" ? duration_in_minutes : (error = true);
+  let price = Number(req.body.price);
+  price = price == "null" ? price : (error = true);
+  let enabled_for_enrollment = Number(enabled_for_enrollment);
+  enabled_for_enrollment =
+    enabled_for_enrollment == "null" ? enabled_for_enrollment : (error = true);
+  let max_assistance = Number(max_assistance);
+  max_assistance = max_assistance == "null" ? max_assistance : (error = true);
+  let id_creator_user =
+    id_creator_user == "null" ? id_creator_user : (error = true);
+
+  if (error) {
+    return res.json("Datos no validos");
+  } else {
+    let object = {
+      name: name,
+      description: description,
+      id_event_category: id_event_category,
+      id_event_location: id_event_location,
+      start_date: start_date,
+      duration_in_minutes: duration_in_minutes,
+      price: price,
+      enabled_for_enrollment: enabled_for_enrollment,
+      max_assistance: max_assistance,
+      id_creator_user: id_creator_user,
+    };
+    return res.json(eventoService.EditEvent(req.params.id,object)); // funcion que crea evento
+  }
+});
+eventoController.delete("/:id",(req,res)=>{
+  if(eventoService.getEventoById(req.params.id))
+  return res.json("Eliminado")
+  else
+  return res.json("Ese evento no existe")
+})
 
 eventoController.post("/:id/enrollment", (req, res) => {
   if (
