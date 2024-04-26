@@ -80,8 +80,8 @@ eventoController.post("/", (req, res) => {
   id_event_location =
     id_event_location == "null" ? id_event_location : (error = true);
   console.log("att" + error);
-  let start_date = Number(req.body.display_order); //ver lo de chequear si es date
-  start_date = !isNaN(start_date) ? start_date : (error = true);
+  let start_date = Date.parse(req.body.start_date); 
+  start_date = !isNaN(start_date) ? req.body.start_date : (error = true);
   let duration_in_minutes = Number(req.body.duration_in_minutes);
   duration_in_minutes =
     duration_in_minutes == "null" ? duration_in_minutes : (error = true);
