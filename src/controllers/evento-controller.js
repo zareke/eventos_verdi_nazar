@@ -17,42 +17,34 @@ eventoController.get("/", (req, res) => {
   var allEvents;
   let error = false;
   Object.values(evento).forEach((i) => (i = ""));
+  //FALTA QUE PUEDA BUSCAR SOLO POR UN ELEMNTO O MAS PERO NO TODOS, Y TAMBIEN FALTA QUE FUNCIONE CUANDO BUSCO SIN FILTROS. LA FECHA ESTA BIEN VALIDADA.
   //LAS VALIDACIONES MITICAS
-  evento.nombre =
-    typeof req.query.nombre !== "string" || evento.nombre == null
-      ? req.query.nombre
-      : (error = true);
+  evento.nombre =req.query.name
 
-  evento.categoria =
-    typeof req.query.categoria !== "string" || evento.categoria == null
-      ? req.query.categoria
-      : (error = true);
+  evento.categoria =req.query.categoria
+     if(evento.fechaDeInicio != 'null'){ evento.fechaDeInicio = Date.parse(req.query.fechaDeInicio)
+  evento.fechaDeInicio = !isNaN(evento.fechaDeInicio) ? req.query.fechaDeInicio : (error = true)}
 
-  evento.fechaDeInicio =
-    !isNaN(new Date(req.query.fechaDeInicio)) || evento.fechaDeInicio == null
-      ? req.query.fechaDeInicio
-      : (error = true);
+  evento.rag = req.query.tag
 
-  evento.rag =
-    typeof req.query.tag !== "string" || evento.rag == null
-      ? req.query.tag
-      : (error = true);
-
-  console.log(evento.fechaDeInicio);
   if (
-    !Object.values(evento).find((i) => i != null || i != undefined || i != "")
+    Object.values(evento).some((i) => i != 'null')
   ) {
-    allEvents = eventoService.getAllEventos(pageSize, page);
-    return res.json(allEvents);
-  }
 
   if (error) {
     return res.json("Datos no validos");
   }
+    allEvents = eventoService.getAllEventosFiltrado(pageSize, page, evento); 
 
-  var noHayFiltros = true;
+  }else{
+    allEvents = eventoService.getAllEventos(pageSize, page);
+    return res.json(allEvents);
+  }
 
-  allEvents = eventoService.getAllEventosFiltrado(pageSize, page); //no le mandamos los flitros mepa lol
+  
+
+
+  
 
   return res.json(allEvents);
 });
@@ -164,7 +156,7 @@ eventoController.patch("/:id", (req, res) => {
 });
 eventoController.delete("/:id",(req,res)=>{
   if(eventoService.getEventoById(req.params.id))
-  return res.json("Eliminado")
+    eventoService.EliminarEvento(id)
   else
   return res.json("Ese evento no existe")
 })

@@ -10,6 +10,7 @@ export default class Eventos {
       {
         name: "lalapalaza",
         description: "lolapaloza2",
+        category:"rock",
         location: "hipodromo de san isidro",
         fecha: "21/8/2020",
         duracion: "3", //asumiendo q la duracion es en horas
@@ -21,6 +22,7 @@ export default class Eventos {
       {
         name: "rubenrada",
         description: "concierto ruben rada",
+        category: "variado",
         location: "luna park",
         fecha: "21/8/2020",
         duracion: "3", //asumiendo q la duracion es en horas
@@ -65,7 +67,7 @@ export default class Eventos {
 
   getAllEventosFiltrado(pageSize, requestedPage, evento) {
     //estaria genial si revisamos este codigo
-    var query =
+    /*var query =
       "select * from events ev inner join event_categories ec on ec.id=ev.id inner join event_tags et on et.id_event=ev.id inner join tags t on t.id = et.id where ";
     var query2 = "select count (*) from events";
 
@@ -91,7 +93,16 @@ export default class Eventos {
           nextPage: "http://localhost:3000/event?limit=15&offset=1",
           total: query2,
         },
-      };
+      };*/
+      //PLACEHOLDER, PORQUE EN REALIDAD IRIA LA QUERY
+      return {
+        collection: evento, //GOTO 8
+        pagination: {
+          limit: pageSize,
+          offset: requestedPage,
+          nextPage: "http://localhost:3000/event?limit=15&offset=1",
+          total: 100000,
+        }
     }
   }
 
@@ -131,6 +142,10 @@ export default class Eventos {
   {
       //la increible magistrar query en vez de esto
       return object
+  }
+  EliminarEvento(id){
+    //eliminarlo
+    return "eliminado"
   }
   patchEnrollment(
     eventoId,
