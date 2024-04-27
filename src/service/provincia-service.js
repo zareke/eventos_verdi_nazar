@@ -10,7 +10,7 @@ export default class Provincias {
     };
     return datoshardcodeados;
   }
-  SearchProvincia() {
+  SearchProvinces(pageSize,requestedPage) {
     //query
     let datoshardcodeados = [
       {
@@ -28,32 +28,34 @@ export default class Provincias {
         dO: 1,
       },
     ];
-    return datoshardcodeados;
+    return {
+      collection: datoshardcodeados, //GOTO 8
+      pagination: {
+        limit: pageSize,
+        offset: requestedPage,
+        nextPage: "http://localhost:3000/event?limit=15&offset=1",
+        total: 100000,
+      }
   }
-  SearchProvinciaById(id) {
+  }
+  SearchProvinceById(id) {
     //query
     let datoshardcodeados = [
-      {
-        name: "BSAS",
-        full_name: "Buenos Aires",
-        latitude: 14,
-        longitude: 214,
-        dO: 1,
-      },
       {
         name: "RSR",
         full_name: "Rosario",
         latitude: 14,
         longitude: 214,
         dO: 1,
-      },
+      }
     ];
     return datoshardcodeados;
   }
-  DeleteProvincia(id) {
+  DeleteProvince(id) {
     //query
     let datoshardcodeados = [
       {
+        "infohardcodeada": "ELIMINADO!",
         name: "BSAS",
         full_name: "Buenos Aires",
         latitude: 14,

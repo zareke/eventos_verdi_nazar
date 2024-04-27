@@ -7,14 +7,16 @@ const userService = new Users();
 
 //hola zarek y dante del futuro les dejo comentarios para que entiendan mi codigo a la hora de hacer el service -dante del pasado
 
-userController.post("/login", (req, res) => {
+userController.get("/login", (req, res) => {
+  
   const token = (Math.random() + 1).toString(36).substring(7); //el token no se cuando se usa y etc
   let correct;
   correct = userService.Login(req.query.username, req.query.password); //devuelve  true o false si ando o no andó
-  correct = false; //BORRAR CUANDO HAGAMOS EL SERVICE BORRAR
+  
   if (correct) {
     return res.status(201).send({
       token: token,
+      info_adicional:"ahora, cuando geteas, aunque no hayas puesto usuario ni contraseña te llega el token. Eso es porque no hace falta pasar por validacion si pusiste todos los datos, porque en el momento en el que codeemos la bd solo chequeamos si coincide con alguno en la tabla"
     });
   } else {
     return res.status(403).send({
@@ -26,25 +28,23 @@ userController.post("/login", (req, res) => {
 userController.post("/register", (req, res) => {
   let error = false;
   let first_name =
-    typeof req.body.first_name == "string"
+    typeof req.body.first_name == "string" && req.body.first_name!=null
       ? req.body.first_name
       : (error = true);
   let last_name =
-    typeof req.body.last_name == "string" ? req.body.last_name : (error = true);
-  let username = userService.UsernameExists(req.body.username)
+    typeof req.body.last_name == "string" && req.body.last_name!= null ? req.body.last_name : (error = true);
+  let username = req.body.username != null && userService.UsernameExists(req.body.username)
     ? req.body.username
     : (error = true); //username exists es una funcion imaginaria que deveulve true o false si el usuario ya existe bastante self explanatory
-  let contraseña = req.body.password;
-  let password =
-    contraseña.length > 7 &&
-    typeof contraseña == "string" &&
-    /\d/.test(contraseña)
-      ? contraseña
-      : (error = "la contraseña es no valida"); //la cosa mas obscure que vi en mi vida javascript es ese /\d/ rarisimo
 
+
+  let password =
+    req.body.password!=null && req.body.password.toString().length > 7
+      ? req.body.password
+      : (error = "la contraseña es no valida"); 
   if (error == false) {
-    userService.Register(first_name,last_name,username,password)
-    return res.status(201);
+    
+    return res.status(201).send(userService.Register(first_name,last_name,username,password));
     
   } else if (error == "la contraseña es no valida") {
     return res.status(400).send({
@@ -57,12 +57,14 @@ userController.post("/register", (req, res) => {
   }
 });
 //5
-userController.get("/:id", (req, res) => {
+userController.get("/:id/enrollment", (req, res) => {
   const pageSize = 4
   const page = req.query.page
- 
+ if (Object.values(req.query).some((i) => i != null)){
     let filteredEventFromUsers = userService.ObtenerUserByEventId(req.query.first_name,req.query.last_name,req.query.username,req.query.attended,req.query.rating,pageSize,page, req.params.id) //funcion que retorna los pibes de la BD segun la bd
-    return res.json(filteredEventFromUsers)
+    return res.json(filteredEventFromUsers)}
+    else
+    return res.json("Datos no validos")
 
 
 })

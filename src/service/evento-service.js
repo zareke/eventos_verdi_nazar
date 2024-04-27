@@ -108,8 +108,20 @@ export default class Eventos {
 
   getEventoById(id) {
    // var query = `select * from events where id=${id}`;
-   var query = "FUTURA QUERY"
-    return query;
+   var datoshardcodeados = 
+    {
+      name: "lalapalaza",
+      description: "lolapaloza2",
+      category:"rock",
+      location: "hipodromo de san isidro",
+      fecha: "21/8/2020",
+      duracion: "3", //asumiendo q la duracion es en horas
+      precio: "$20000",
+      habilitado: false,
+      capacidad: "60000",
+      creador: "zareke",
+    }
+    return datoshardcodeados;
   }
 
   postNewEnrollment(
@@ -144,7 +156,7 @@ export default class Eventos {
       return object
   }
   EliminarEvento(id){
-    //eliminarlo
+    //query para eliminarlo
     return "eliminado"
   }
   patchEnrollment(

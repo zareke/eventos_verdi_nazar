@@ -1,19 +1,26 @@
 export default class  Users {
     Login(username,password){
-        const query = `select  password=${password} from users where username=${username}`
-        const correct = query.execute();    
-
+       // const query = `select  password=${password} from users where username=${username}`
+      //  const correct = query.execute();    
+let correct = true //harcoding
         return correct
     }
 
-    UserNameExists(username){
-        const query = `select exists (select 1 from user where username = ${username})`
-        const exists = query.execute()
+    UsernameExists(username){
+       // const query = `select exists (select 1 from user where username = ${username})`
+      //  const exists = query.execute()
+      let correct = true //harcoding
         return correct
     }
 
     Register(fn,ln,u,p){
-        const query = `insert into user values (${fn},${ln},${u},${p})`
+        //const query = `insert into user values (${fn},${ln},${u},${p})`
+        return {
+            "fn":fn,
+            "ln":ln,
+            "u":u,
+            "p":p
+        }
     }
 
     ObtenerUserByEventId(first_name,last_name,username,attended,rating,pageSize,page, eventFromId){
@@ -26,7 +33,9 @@ export default class  Users {
                 "rating":rating
             }
         ]
-        //ACA VENDRIA TODA LA QUERY INCREIBLE CON EL EVENTFROMID
+        //ACA VENDRIA TODA LA QUERY INCREIBLE CON EL EVENTFROMID, lo que no tenemos bien en claro es si podemos si quiera obtener el evento y pasarlo al servicio del usuario...    
+      
+      
         return {
             collection: datoshardcodeados /*query*/, 
             pagination: {
@@ -36,6 +45,7 @@ export default class  Users {
               total: /*query2*/ 299998,
             },
           };
+          
     }
 
     

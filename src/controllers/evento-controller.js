@@ -19,32 +19,33 @@ eventoController.get("/", (req, res) => {
   Object.values(evento).forEach((i) => (i = ""));
   //FALTA QUE PUEDA BUSCAR SOLO POR UN ELEMNTO O MAS PERO NO TODOS, Y TAMBIEN FALTA QUE FUNCIONE CUANDO BUSCO SIN FILTROS. LA FECHA ESTA BIEN VALIDADA.
   //LAS VALIDACIONES MITICAS
-  evento.nombre =req.query.name
+  evento.nombre = req.query.name
 
-  evento.categoria =req.query.categoria
-     if(evento.fechaDeInicio != 'null'){ evento.fechaDeInicio = Date.parse(req.query.fechaDeInicio)
-  evento.fechaDeInicio = !isNaN(evento.fechaDeInicio) ? req.query.fechaDeInicio : (error = true)}
-
-  evento.rag = req.query.tag
+  evento.categoria = req.query.category
+  evento.tag = req.query.tag
+  if (req.query.startDate != undefined) {
+    evento.fechaDeInicio = !isNaN(Date.parse(req.query.startDate)) ?
+      req.query.startDate : (error = true); console.log(req.query.startDate)
+  } else evento.fechaDeInicio = req.query.startDate
 
   if (
-    Object.values(evento).some((i) => i != 'null')
+    Object.values(evento).some((i) => i != null)
   ) {
 
-  if (error) {
-    return res.json("Datos no validos");
-  }
-    allEvents = eventoService.getAllEventosFiltrado(pageSize, page, evento); 
+    if (error) {
+      return res.json("Datos no validos");
+    }
+    allEvents = eventoService.getAllEventosFiltrado(pageSize, page, evento);
 
-  }else{
+  } else {
     allEvents = eventoService.getAllEventos(pageSize, page);
     return res.json(allEvents);
   }
 
-  
 
 
-  
+
+
 
   return res.json(allEvents);
 });
@@ -57,35 +58,36 @@ eventoController.get("/:id", (req, res) => {
   } else return res.json("datos no validos");
 });
 eventoController.post("/", (req, res) => {
+  //EL SUPER HIPER MEGA VALIDAZO
   let error = false;
-  let name = typeof req.body.name == "string" ? req.body.name : (error = true);
-  console.log("name" + error);
+  let name = req.body.name != undefined ? req.body.name : (error = true);
+
   let description =
-    typeof req.body.description == "string"
+    req.body.description != undefined
       ? req.body.description
       : (error = true);
+  console.log(error)
   let id_event_category = Number(req.body.id_event_category);
   id_event_category =
-    id_event_category == "null" ? req.body.id_event_category : (error = true);
-  console.log("user" + error);
+    !isNaN(id_event_category) ? req.body.id_event_category : (error = true);
   let id_event_location = Number(req.body.id_event_location);
+
   id_event_location =
-    id_event_location == "null" ? id_event_location : (error = true);
-  console.log("att" + error);
-  let start_date = Date.parse(req.body.start_date); 
+    !isNaN(id_event_location) ? id_event_location : (error = true);
+  let start_date = Date.parse(req.body.start_date);
   start_date = !isNaN(start_date) ? req.body.start_date : (error = true);
   let duration_in_minutes = Number(req.body.duration_in_minutes);
   duration_in_minutes =
-    duration_in_minutes == "null" ? duration_in_minutes : (error = true);
+    !isNaN(duration_in_minutes) ? duration_in_minutes : (error = true);
   let price = Number(req.body.price);
-  price = price == "null" ? price : (error = true);
-  let enabled_for_enrollment = Number(enabled_for_enrollment);
+  price = !isNaN(price) ? price : (error = true);
+  let enabled_for_enrollment = Number(req.body.enabled_for_enrollment);
   enabled_for_enrollment =
-    enabled_for_enrollment == "null" ? enabled_for_enrollment : (error = true);
-  let max_assistance = Number(max_assistance);
-  max_assistance = max_assistance == "null" ? max_assistance : (error = true);
-  let id_creator_user =
-    id_creator_user == "null" ? id_creator_user : (error = true);
+    !isNaN(enabled_for_enrollment) ? enabled_for_enrollment : (error = true);
+  let max_assistance = Number(req.body.max_assistance);
+  max_assistance = !isNaN(req.body.max_assistance) ? max_assistance : (error = true);
+  let id_creator_user = Number(req.body.id_creator_user);
+  id_creator_user = !isNaN(id_creator_user) ? id_creator_user : (error = true);
 
   if (error) {
     return res.json("Datos no validos");
@@ -106,35 +108,46 @@ eventoController.post("/", (req, res) => {
   }
 });
 eventoController.patch("/:id", (req, res) => {
+  //EL SUPER HIPER MEGA VALIDAZO 2 o 3 en realidad
+  if (!Object.values(req.body).some((i) => i != null) ) {
+    return res.json("NO HAY NINGUN DATO PARA EDITAR")
+  }
   let error = false;
-  let name = typeof req.body.name == "string" ? req.body.name : (error = true);
-  console.log("name" + error);
-  let description =
-    typeof req.body.description == "string"
-      ? req.body.description
-      : (error = true);
+  let name = req.body.name
+
+  let description = req.body.description
   let id_event_category = Number(req.body.id_event_category);
-  id_event_category =
-    id_event_category == "null" ? req.body.id_event_category : (error = true);
-  console.log("user" + error);
+  if (req.body.id_event_category != undefined) {//si esta definido, chequear que sea un numero. 
+    id_event_category =
+      !isNaN(id_event_category) ? req.body.id_event_category : (error = true);
+  } else id_event_category = req.body.id_event_category
   let id_event_location = Number(req.body.id_event_location);
-  id_event_location =
-    id_event_location == "null" ? id_event_location : (error = true);
-  console.log("att" + error);
-  let start_date = Date.parse(req.body.start_date); 
-  start_date = !isNaN(start_date) ? req.body.start_date : (error = true);
+  if (req.body.id_event_location != undefined) {
+    id_event_location =
+      !isNaN(id_event_location) ? id_event_location : (error = true);
+  } else id_event_location = req.body.id_event_location
+  let start_date = Date.parse(req.body.start_date);
+  if (req.body.start_date != undefined) {
+    start_date = !isNaN(start_date) ? req.body.start_date : (error = true);
+  } else start_date = req.body.start_date
   let duration_in_minutes = Number(req.body.duration_in_minutes);
-  duration_in_minutes =
-    duration_in_minutes == "null" ? duration_in_minutes : (error = true);
+  if (req.body.duration_in_minutes != undefined) {
+    duration_in_minutes =
+      !isNaN(duration_in_minutes) ? duration_in_minutes : (error = true);
+  } else duration_in_minutes = req.body.duration_in_minutes
   let price = Number(req.body.price);
-  price = price == "null" ? price : (error = true);
-  let enabled_for_enrollment = Number(enabled_for_enrollment);
-  enabled_for_enrollment =
-    enabled_for_enrollment == "null" ? enabled_for_enrollment : (error = true);
-  let max_assistance = Number(max_assistance);
-  max_assistance = max_assistance == "null" ? max_assistance : (error = true);
-  let id_creator_user =
-    id_creator_user == "null" ? id_creator_user : (error = true);
+  if (req.body.price != undefined) {
+    price = !isNaN(price) ? price : (error = true);
+  } else price = req.body.price
+  let enabled_for_enrollment = Number(req.body.enabled_for_enrollment);
+  if (req.body.enabled_for_enrollment != undefined) {
+    enabled_for_enrollment =
+      !isNaN(enabled_for_enrollment) ? enabled_for_enrollment : (error = true);
+  } else enabled_for_enrollment = req.body.enabled_for_enrollment
+  let max_assistance = Number(req.body.max_assistance);
+  if (req.body.max_assistance != undefined) { max_assistance = !isNaN(req.body.max_assistance) ? max_assistance : (error = true); } else max_assistance = req.body.max_assistance
+  let id_creator_user = Number(req.body.id_creator_user);
+  if (req.body.id_creator_user != null) { id_creator_user = !isNaN(id_creator_user) ? id_creator_user : (error = true); } else id_creator_user = req.body.id_creator_user
 
   if (error) {
     return res.json("Datos no validos");
@@ -151,14 +164,14 @@ eventoController.patch("/:id", (req, res) => {
       max_assistance: max_assistance,
       id_creator_user: id_creator_user,
     };
-    return res.json(eventoService.EditEvent(req.params.id,object)); // funcion que crea evento
+    return res.json(eventoService.EditEvent(req.params.id, object)); // funcion que crea evento
   }
 });
-eventoController.delete("/:id",(req,res)=>{
-  if(eventoService.getEventoById(req.params.id))
-    eventoService.EliminarEvento(id)
+eventoController.delete("/:id", (req, res) => {
+  if (eventoService.getEventoById(req.params.id) != null)
+  return res.json(eventoService.EliminarEvento(req.params.id)) 
   else
-  return res.json("Ese evento no existe")
+    return res.json("Ese evento no existe")
 })
 
 eventoController.post("/:id/enrollment", (req, res) => {
@@ -170,7 +183,7 @@ eventoController.post("/:id/enrollment", (req, res) => {
       )
     )
   ) {
-    return res.json(req.params.id);
+    return res.json("No hay ningun parametro de id de usuario o/y el id de evento no existe");
   }
 
   const user = req.query.userId;
@@ -193,21 +206,21 @@ eventoController.post("/:id/enrollment", (req, res) => {
 eventoController.patch("/:id/enrollment", (req, res) => {
   if (
     !(
-      Number.isInteger(Number(req.query.rating)) &&
-      Number.isInteger(Number(req.query.attended))
+       (
+        Number.isInteger(Number(req.query.rating)) &&
+        Number.isInteger(Number(req.params.id))
+      )
     )
-  )
-    return res.json("datos no validos");
+  ) {
+    return res.json("No hay ningun rating o/y el id de evento no existe");
+  }
 
-  const evento = req.params.id;
-  const descripcion = req.query.description;
-  const attended = req.query.attended;
   const observations = req.query.observations;
   const rating = req.query.rating;
   const enrollment = eventoService.patchEnrollment(
-    evento,
-    descripcion,
-    attended,
+    "evento",
+    "descripcion",
+    "1",
     observations,
     rating
   );
