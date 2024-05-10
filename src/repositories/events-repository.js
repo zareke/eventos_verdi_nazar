@@ -1,9 +1,16 @@
 import pg from "pg"
-import { DBConfig } from "./db.js"
+import { config } from "../../dbconfig.js"
 
-const client = new pg.Client(DBConfig)
+const client = new pg.Client(config)
+
 client.connect()
 
-const sql = "SELECT * FROM events"
 
-const respuesta = await client.query(sql)
+export class EventsRepository{
+async getEvents(id,pageSize){
+var query = "select * from events limit ${pageSize}"
+console.log("aun no hubo un error3")
+const values = client.query(query)
+console.log("aun no hubo un error4")
+return values
+}}
