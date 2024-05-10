@@ -16,6 +16,7 @@ eventoController.get("/", (req, res) => {
   const page = req.query.page;
   var allEvents;
   let error = false;
+  console.log(page)
   Object.values(evento).forEach((i) => (i = ""));
   //FALTA QUE PUEDA BUSCAR SOLO POR UN ELEMNTO O MAS PERO NO TODOS, Y TAMBIEN FALTA QUE FUNCIONE CUANDO BUSCO SIN FILTROS. LA FECHA ESTA BIEN VALIDADA.
   //LAS VALIDACIONES MITICAS

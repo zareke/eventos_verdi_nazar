@@ -3,7 +3,7 @@ import config from '../../dbconfig.js'
 import {EventsRepository} from "../repositories/events-repository.js"
 const eventsRepository = new EventsRepository()
 export default class Eventos {
-  getAllEventos = async (pageSize, requestedPage, evento) => {
+  getAllEventos = async (pageSize, requestedPage) => {
     //DATOS HARDCODEADO S ESTO HAY Q PONERLO DSPS
     /* 
         var query = `select * from events limit ${pageSize}`; //aca hay que hacer un recontra innerjoin para traer todo
@@ -12,7 +12,10 @@ export default class Eventos {
         */
     let returnEntity = null
     try {
+      console.log("hola?")
+      console.log(requestedPage)
       let eventos = eventsRepository.getEvents(id,pageSize)
+      console.log(eventos)
       return {
         collection: eventos /*query*/, //es posible que aca vaya eventsInDB
         pagination: {
@@ -23,7 +26,7 @@ export default class Eventos {
         },
       };
     } catch (error){
-      throw new Error("No funciono :(")
+      
     }
     
   }
