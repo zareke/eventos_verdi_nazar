@@ -1,7 +1,8 @@
 
 import config from '../../dbconfig.js'
-import {EventsRepository} from "../repositories/events-repository.js"
-const eventsRepository = new EventsRepository()
+import EventsRepository from "../repositories/events-repository.js"
+import sql from 'mssql'
+
 export default class Eventos {
   getAllEventos = async (pageSize, requestedPage) => {
     //DATOS HARDCODEADO S ESTO HAY Q PONERLO DSPS
@@ -12,23 +13,15 @@ export default class Eventos {
         */
     let returnEntity = null
     try {
-      console.log("hola?")
-      console.log(requestedPage)
-      let eventos = eventsRepository.getEvents(id,pageSize)
-      console.log(eventos)
-      return {
-        collection: eventos /*query*/, //es posible que aca vaya eventsInDB
-        pagination: {
-          limit: pageSize,
-          offset: requestedPage,
-          nextPage: "http://localhost:3000/event?limit=15&offset=1",
-          total: /*query2*/ 299998,
-        },
-      };
+      let pool = await sql.connect(config)
+      let result = await pool.request()
+                        .input('pageSize',sql.Int,requestedPage)
+                        .query('SELECT * FROM events limit @pageSize')
+      returnEntity=result.recordsets[0][0];
     } catch (error){
-      
+     console.log(error)
     }
-    
+    return returnEntity
   }
 
   getDetalleEventos() {
