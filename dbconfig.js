@@ -8,7 +8,7 @@ server: process.env.DB_SERVER,
 port: 5432,
 database: process.env.DB_DATABASE,
 host:"localhost",
-hostname:"localhost"
+hostname:process.env.DB_HOSTNAME
 }
 
 export default config

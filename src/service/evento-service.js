@@ -13,6 +13,7 @@ export default class Eventos {
         */
     let returnEntity = null
     try {
+      console.log("config:", config)
       let pool = await sql.connect(config)
       let result = await pool.request()
                         .input('pageSize',sql.Int,requestedPage)
