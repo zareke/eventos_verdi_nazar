@@ -8,12 +8,10 @@ this.DBClient = new Client(config)
 this.DBClient.connect();
 }
 async getAllEvents(limit, offset) {
-    console.log("ESTOY AQUÍ")
-    //despues fijarse si anda sacandole estos.
-    
     try {
     const sql = "SELECT * FROM events OFFSET $1 LIMIT $2;";
     const eventos = await this.DBClient.query(sql, [ offset,limit ]);
+    
     return eventos.rows;
     } catch (error) {
     console.error("Error al obtener eventos:", error);

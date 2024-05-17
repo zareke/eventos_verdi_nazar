@@ -15,7 +15,7 @@ export default class Eventos {
     let returnEntity = null
     
     const eventrepo = new EventsRepository();
-    returnEntity= eventrepo.getAllEvents(pageSize,requestedPage)
+    returnEntity= await eventrepo.getAllEvents(pageSize,requestedPage)
     
     
     return returnEntity

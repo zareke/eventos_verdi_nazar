@@ -11,7 +11,7 @@ var evento = {
 
 const eventoService = new Eventos();
 //nota: aparentemente hay que validar TODO
-eventoController.get("/", (req, res) => {
+eventoController.get("/", async (req, res) => {
   const pageSize = 4;
   const page = req.query.page;
   var allEvents;
@@ -39,7 +39,8 @@ eventoController.get("/", (req, res) => {
     allEvents = eventoService.getAllEventosFiltrado(pageSize, page, evento);
 
   } else {
-    allEvents = eventoService.getAllEventos(pageSize, page);
+    allEvents = await eventoService.getAllEventos(pageSize, page);
+    
     return res.json(allEvents);
   }
 
