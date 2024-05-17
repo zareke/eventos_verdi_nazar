@@ -1,14 +1,14 @@
-
-import 'dotenv/config';
+import "dotenv/config";
 
 const config = {
-user: process.env.DB_USER,
-password: process.env.DB_PASSWORD,
-server: process.env.DB_SERVER,
-port: 5432,
-database: process.env.DB_DATABASE,
-host:"localhost",
-hostname:process.env.DB_HOSTNAME
-}
+  host: "localhost",
+  hostname: "localhost",
+  database: process.env.DB_DATABASE,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  port: 5432,
+  server:process.env.DB_SERVER,
+  
+};
 
-export default config
+export default config;

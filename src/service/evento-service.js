@@ -1,5 +1,6 @@
 
-import config from '../../dbconfig.js'
+
+
 import EventsRepository from "../repositories/events-repository.js"
 import sql from 'mssql'
 
@@ -12,16 +13,11 @@ export default class Eventos {
         const eventsInDB = query.execute()
         */
     let returnEntity = null
-    try {
-      console.log("config:", config)
-      let pool = await sql.connect(config)
-      let result = await pool.request()
-                        .input('pageSize',sql.Int,requestedPage)
-                        .query('SELECT * FROM events limit @pageSize')
-      returnEntity=result.recordsets[0][0];
-    } catch (error){
-     console.log(error)
-    }
+    
+    const eventrepo = new EventsRepository();
+    returnEntity= eventrepo.getAllEvents(pageSize,requestedPage)
+    
+    
     return returnEntity
   }
 
