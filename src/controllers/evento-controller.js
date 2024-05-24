@@ -10,7 +10,7 @@ var evento = {
 };
 
 const eventoService = new Eventos();
-//nota: aparentemente hay que validar TODO
+
 eventoController.get("/", async (req, res) => {
   const pageSize = 4;
   const page = req.query.page;
@@ -18,17 +18,19 @@ eventoController.get("/", async (req, res) => {
   let error = false;
   console.log(page)
   Object.values(evento).forEach((i) => (i = ""));
-  //FALTA QUE PUEDA BUSCAR SOLO POR UN ELEMNTO O MAS PERO NO TODOS, Y TAMBIEN FALTA QUE FUNCIONE CUANDO BUSCO SIN FILTROS. LA FECHA ESTA BIEN VALIDADA.
-  //LAS VALIDACIONES MITICAS
+
+  //LAS VALIDACIONES MITICAS (perdon por el codigo espagueti)
   evento.nombre = req.query.name
 
   evento.categoria = req.query.category
   evento.tag = req.query.tag
+
   if (req.query.startDate != undefined) {
     evento.fechaDeInicio = !isNaN(Date.parse(req.query.startDate)) ?
       req.query.startDate : (error = true); console.log(req.query.startDate)
   } else evento.fechaDeInicio = req.query.startDate
 
+  console.log(evento)
   if (
     Object.values(evento).some((i) => i != null)
   ) {
@@ -37,6 +39,7 @@ eventoController.get("/", async (req, res) => {
       return res.json("Datos no validos");
     }
     allEvents = eventoService.getAllEventosFiltrado(pageSize, page, evento);
+    return res.json(allEvents)
 
   } else {
     allEvents = await eventoService.getAllEventos(pageSize, page);
@@ -49,10 +52,10 @@ eventoController.get("/", async (req, res) => {
 
 
 
-  return res.json(allEvents);
 });
 
 eventoController.get("/:id", (req, res) => {
+  console.log(req.params.id)
   if (Number.isInteger(Number(req.params.id))) {
     const id = req.params.id;
     const evento = eventoService.getEventoById(id);
@@ -60,7 +63,7 @@ eventoController.get("/:id", (req, res) => {
   } else return res.json("datos no validos");
 });
 eventoController.post("/", (req, res) => {
-  //EL SUPER HIPER MEGA VALIDAZO
+  //EL SUPER HIPER MEGA VALIDAZO (perdon)
   let error = false;
   let name = req.body.name != undefined ? req.body.name : (error = true);
 
@@ -110,7 +113,7 @@ eventoController.post("/", (req, res) => {
   }
 });
 eventoController.patch("/:id", (req, res) => {
-  //EL SUPER HIPER MEGA VALIDAZO 2 o 3 en realidad
+  //EL SUPER HIPER MEGA VALIDAZO 2 o 3 en realidad (perdon)
   if (!Object.values(req.body).some((i) => i != null) ) {
     return res.json("NO HAY NINGUN DATO PARA EDITAR")
   }

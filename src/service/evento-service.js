@@ -42,36 +42,14 @@ export default class Eventos {
     return `${nombre} = ${propiedad} and`;
   }
 
-  getAllEventosFiltrado(pageSize, requestedPage, evento) {
-    //estaria genial si revisamos este codigo
-    /*var query =
-      "select * from events ev inner join event_categories ec on ec.id=ev.id inner join event_tags et on et.id_event=ev.id inner join tags t on t.id = et.id where ";
-    var query2 = "select count (*) from events";
+  async getAllEventosFiltrado(pageSize, requestedPage, evento) {
+    
+    
+    let returnEntity = null
+    const eventrepo = new EventsRepository()
+    returnEntity = await eventrepo.getAllEventsFiltrado(pageSize,requestedPage,evento)
 
-    if (evento.nombre != "") {
-      (query += "ev.name="), evento.nombre, " and";
-      if (evento.categoria != "") {
-        (query += "ec.name"), evento.categoria, " and";
-      }
-      if (evento.fechaDeInicio != "") {
-        (query += "ev.start_date"), evento.fechaDeInicio, " and";
-      }
-      if (evento.tag != "") {
-        (query += "t.name"), evento.tag, " and";
-      }
-      query = query.substring(0, query.length - 3);
 
-      //const eventsInDB = query.execute();
-      return {
-        collection: query, //GOTO 8
-        pagination: {
-          limit: pageSize,
-          offset: requestedPage,
-          nextPage: "http://localhost:3000/event?limit=15&offset=1",
-          total: query2,
-        },
-      };*/
-      //PLACEHOLDER, PORQUE EN REALIDAD IRIA LA QUERY
       return {
         collection: evento, //GOTO 8
         pagination: {
@@ -83,22 +61,14 @@ export default class Eventos {
     }
   }
 
-  getEventoById(id) {
-   // var query = `select * from events where id=${id}`;
-   var datoshardcodeados = 
-    {
-      name: "lalapalaza",
-      description: "lolapaloza2",
-      category:"rock",
-      location: "hipodromo de san isidro",
-      fecha: "21/8/2020",
-      duracion: "3", //asumiendo q la duracion es en horas
-      precio: "$20000",
-      habilitado: false,
-      capacidad: "60000",
-      creador: "zareke",
-    }
-    return datoshardcodeados;
+  async getEventoById(id) {
+   let returnEntity = null
+    
+   const eventrepo = new EventsRepository();
+   returnEntity= await eventrepo.getEventById(id)
+   
+   
+   return returnEntity
   }
 
   postNewEnrollment(
