@@ -16,7 +16,7 @@ eventoController.get("/", async (req, res) => {
   const page = req.query.page;
   var allEvents;
   let error = false;
-  console.log(page)
+ 
   Object.values(evento).forEach((i) => (i = ""));
 
   //LAS VALIDACIONES MITICAS (perdon por el codigo espagueti)
@@ -27,10 +27,10 @@ eventoController.get("/", async (req, res) => {
 
   if (req.query.startDate != undefined) {
     evento.fechaDeInicio = !isNaN(Date.parse(req.query.startDate)) ?
-      req.query.startDate : (error = true); console.log(req.query.startDate)
+      req.query.startDate : (error = true); 
   } else evento.fechaDeInicio = req.query.startDate
 
-  console.log(evento)
+  
   if (
     Object.values(evento).some((i) => i != null)
   ) {
@@ -38,7 +38,7 @@ eventoController.get("/", async (req, res) => {
     if (error) {
       return res.json("Datos no validos");
     }
-    allEvents = eventoService.getAllEventosFiltrado(pageSize, page, evento);
+    allEvents = await eventoService.getAllEventosFiltrado(pageSize, page, evento);
     return res.json(allEvents)
 
   } else {
@@ -54,13 +54,13 @@ eventoController.get("/", async (req, res) => {
 
 });
 
-eventoController.get("/:id", (req, res) => {
-  console.log(req.params.id)
+eventoController.get("/:id", async (req, res) => {
+  
   if (Number.isInteger(Number(req.params.id))) {
     const id = req.params.id;
-    const evento = eventoService.getEventoById(id);
+    const evento = await eventoService.getEventoById(id);
     return res.json(evento);
-  } else return res.json("datos no validos");
+  } else return res.json("Datos no validos");
 });
 eventoController.post("/", (req, res) => {
   //EL SUPER HIPER MEGA VALIDAZO (perdon)

@@ -51,7 +51,7 @@ export default class Eventos {
 
 
       return {
-        collection: evento, //GOTO 8
+        collection: returnEntity, //GOTO 8
         pagination: {
           limit: pageSize,
           offset: requestedPage,
@@ -66,7 +66,6 @@ export default class Eventos {
     
    const eventrepo = new EventsRepository();
    returnEntity= await eventrepo.getEventById(id)
-   
    
    return returnEntity
   }
@@ -92,10 +91,12 @@ export default class Eventos {
 
     return enrollment
   }
-  PostEvent(object)
+  async PostEvent(object)
   {
-      //la increible magistrar query en vez de esto
-      return object
+    let returnEntity = null
+    const eventrepo = new EventsRepository()
+    returnEntity = await eventrepo.postEvent(pageSize,requestedPage,evento)
+    return returnEntity
   }
   EditEvent(id,object)
   {

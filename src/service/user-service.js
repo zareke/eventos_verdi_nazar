@@ -1,9 +1,14 @@
+import UsersRepository from '../repositories/users-repository.js'
+
 export default class  Users {
-    Login(username,password){
-       // const query = `select  password=${password} from users where username=${username}`
-      //  const correct = query.execute();    
-let correct = true //harcoding
-        return correct
+    async Login(username,password){
+        
+        const userrepo = new UsersRepository()
+        const loggedin = await userrepo.login(username,password)
+
+        
+        
+        return loggedin
     }
 
     UsernameExists(username){

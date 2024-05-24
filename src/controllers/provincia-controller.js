@@ -103,7 +103,7 @@ provinciaController.patch("/:id", (req, res) => {
         ? req.body.display_order
         : (error = true);
   } else dO = req.body.display_order
-  console.log("rat" + error)
+ 
   if (error == false) {
     let province = provinciaService.EditarPorId(name, full_name, latitude, longitude, dO, req.params.id) //funcion que edita
     return res.json(province)

@@ -4,19 +4,34 @@ import Users from "../service/user-service.js";
 import Eventos from "../service/evento-service.js" // que importe el service de user
 const eventoService = new Eventos();
 const userService = new Users();
-
+import jwt from 'jsonwebtoken'
 //hola zarek y dante del futuro les dejo comentarios para que entiendan mi codigo a la hora de hacer el service -dante del pasado
 
-userController.get("/login", (req, res) => {
+userController.get("/login", async (req, res) => {
   
-  const token = (Math.random() + 1).toString(36).substring(7); //el token no se cuando se usa y etc
-  let correct;
-  correct = userService.Login(req.query.username, req.query.password); //devuelve  true o false si ando o no andó
+  const loggedin = await userService.Login(req.query.username, req.query.password); //devuelve  true o false si ando o no andó
   
-  if (correct) {
+  
+  console.log("coso",loggedin[0].user_exists)
+
+  const options = {
+    expiresIn:'1h',
+    issuer:'hangover'
+  }
+  const secretkey = "ariaverdienspotify"
+  const payload={
+    id : loggedin[0].user_exists
+  }
+
+
+  const token = jwt.sign(payload,secretkey,options)
+
+  console.log(token) //ESTO TIENE EL TOKEN ACA QUEDE LA SEMANA PASADA
+
+if (loggedin[0].user_exists != -1) {
     return res.status(201).send({
-      token: token,
-      info_adicional:"ahora, cuando geteas, aunque no hayas puesto usuario ni contraseña te llega el token. Eso es porque no hace falta pasar por validacion si pusiste todos los datos, porque en el momento en el que codeemos la bd solo chequeamos si coincide con alguno en la tabla"
+      //token: token,
+      info_adicional:""
     });
   } else {
     return res.status(403).send({
