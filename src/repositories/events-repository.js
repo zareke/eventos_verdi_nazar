@@ -80,19 +80,56 @@ export default class EventRepository {
   }
   async patchEvent(id, eventoObj) {
     try {
-      
-  
-  
-      // Asumiendo que tienes un campo 'id' para identificar el evento
-      const eventId = eventoObj
-  
-      const sql = `UPDATE events SET ??? WHERE id = $${id}`;
-      
+      const fields = [];
+      const values = [];
+      let index = 1;
+
+      for (const key in eventoObj) {
+        if (eventoObj.hasOwnProperty(key)) {
+          let value = eventoObj[key];
+          if (key === 'start_date') {
+            const fecha = new Date(value);
+            if (!isNaN(fecha.getTime())) {
+              value = fecha.toISOString();
+            } else {
+              throw new Error(`Fecha inválida para el campo ${key}`);
+            }
+          } else if (['id_event_category', 'id_event_location', 'price', 'enabled_for_enrollment', 'max_assistance', 'duration_in_minutes', 'id_creator_user'].includes(key)) {
+            value = Number(value);
+            if (isNaN(value)) {
+              throw new Error(`Valor numérico inválido para el campo ${key}`);
+            }
+          }
+          fields.push(`${key} = $${index}`);
+          values.push(value);
+          index++;
+        }
+      }
+
+      const sql = `UPDATE events SET ${fields.join(', ')} WHERE id = $${index}`;
+      values.push(id);
+
       const result = await this.DBClient.query(sql, values);
       return result.rows;
     } catch (error) {
       console.error("Error al actualizar evento:", error);
+      throw error; // Propaga el error para que pueda ser manejado por el llamador
     }
   }
-  
+
+
+  async deleteEvent(){
+
+  }
+  async getMaxCapacity(idlocation){
+    try {
+       
+      const values = [idlocation] 
+    const sql = "SELECT max_capacity from event_locations where event_locations.id = $1";
+    const eventos = await this.DBClient.query(sql, values);
+    return eventos.rows;
+  } catch (error) {
+    console.error("Error al obtener eventos:", error);
+  }
+  }
 }

@@ -5,23 +5,10 @@ import Eventos from "../service/evento-service.js" // que importe el service de 
 const eventoService = new Eventos();
 const userService = new Users();
 import jwt from 'jsonwebtoken'
-const secretkey = "ariaverdienspotify"
+export const secretkey = "ariaverdienspotify"
 
 
-const userMiddleware = async function (req, res, next) {
-  
-  let sentToken=req.headers.authorization.split(" ")[1]
-  
-  let payloadOriginal= null
-  try{
-    payloadOriginal= await jwt.verify(sentToken, secretkey)
-  }
-  catch(error){
-    res.json("token no valido o expirado")
-  }
-  next(); 
 
-}
 
 //6
 userController.get("/login", async (req, res) => {
@@ -29,7 +16,6 @@ userController.get("/login", async (req, res) => {
   const loggedin = await userService.Login(req.query.username, req.query.password); //devuelve  true o false si ando o no andó
   
   
-  console.log("coso",loggedin[0].user_exists)
 
   const options = {
     expiresIn:'1h',
@@ -41,7 +27,7 @@ userController.get("/login", async (req, res) => {
   }
 
 
-  const token = jwt.sign(payload,secretkey,options)
+    const token = jwt.sign(payload,secretkey,options)
 
   
 
@@ -91,17 +77,6 @@ userController.post("/register", (req, res) => { //anda 👌
     });
   }
 });
-//5
-userController.get("/:id/enrollment", userMiddleware, (req, res) => {
-  const pageSize = 4
-  const page = req.query.page
- if (Object.values(req.query).some((i) => i != null)){
-    let filteredEventFromUsers = userService.ObtenerUserByEventId(req.query.first_name,req.query.last_name,req.query.username,req.query.attended,req.query.rating,pageSize,page, req.params.id) //funcion que retorna los pibes de la BD segun la bd
-    return res.json(filteredEventFromUsers)}
-    else
-    return res.json("Datos no validos")
 
-
-})
 
 export default userController;

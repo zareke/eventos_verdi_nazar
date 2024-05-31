@@ -91,6 +91,12 @@ export default class Eventos {
 
     return enrollment
   }
+  async getMaxCapacity(idlocation){
+    let returnEntity = null
+    const eventrepo = new EventsRepository()
+    returnEntity = await eventrepo.getMaxCapacity(idlocation)
+    return returnEntity
+  }
   async PostEvent(object)
   {
     let returnEntity = null
@@ -98,16 +104,18 @@ export default class Eventos {
     returnEntity = await eventrepo.postEvent(object)
     return returnEntity
   }
-  patchEvent(id,object)
+  async patchEvent(id,object)
   {
     let returnEntity = null
     const eventrepo = new EventsRepository()
     returnEntity = await eventrepo.patchEvent(id,object)
     return returnEntity
   }
-  EliminarEvento(id){
-    //query para eliminarlo
-    return "eliminado"
+  async EliminarEvento(id){
+    let returnEntity = null
+    const eventrepo = new EventsRepository()
+    returnEntity = await eventrepo.deleteEvent(id)
+    return returnEntity
   }
   patchEnrollment(
     eventoId,
