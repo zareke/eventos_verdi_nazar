@@ -6,6 +6,15 @@ const eventoService = new Eventos();
 const userService = new Users();
 import jwt from 'jsonwebtoken'
 //hola zarek y dante del futuro les dejo comentarios para que entiendan mi codigo a la hora de hacer el service -dante del pasado
+let token
+
+const userMiddleware = function (req, res, next) {
+  
+  let sentToken=req.headers.authorization.split(" ")[1]
+  
+  if (sentToken==)  
+  
+}
 
 userController.get("/login", async (req, res) => {
   
@@ -24,14 +33,14 @@ userController.get("/login", async (req, res) => {
   }
 
 
-  const token = jwt.sign(payload,secretkey,options)
+  token = jwt.sign(payload,secretkey,options)
 
-  console.log(token) //ESTO TIENE EL TOKEN ACA QUEDE LA SEMANA PASADA
+  
 
 if (loggedin[0].user_exists != -1) {
     return res.status(201).send({
       //token: token,
-      info_adicional:""
+      token:token
     });
   } else {
     return res.status(403).send({
@@ -72,7 +81,7 @@ userController.post("/register", (req, res) => {
   }
 });
 //5
-userController.get("/:id/enrollment", (req, res) => {
+userController.get("/:id/enrollment", userMiddleware, (req, res) => {
   const pageSize = 4
   const page = req.query.page
  if (Object.values(req.query).some((i) => i != null)){

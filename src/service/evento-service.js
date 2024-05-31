@@ -95,7 +95,7 @@ export default class Eventos {
   {
     let returnEntity = null
     const eventrepo = new EventsRepository()
-    returnEntity = await eventrepo.postEvent(pageSize,requestedPage,evento)
+    returnEntity = await eventrepo.postEvent(object)
     return returnEntity
   }
   EditEvent(id,object)

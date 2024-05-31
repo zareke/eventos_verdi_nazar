@@ -62,52 +62,55 @@ eventoController.get("/:id", async (req, res) => {
     return res.json(evento);
   } else return res.json("Datos no validos");
 });
+function ValidarStrings(datos){
+  for(var i= 0; i <datos.length; i++){
+    let dato = datos[i]
+    if (dato == undefined)
+    {(error = true)} 
+  }
+  return false
+}
+function ValidarNumeros(datos){
+  for(var i= 0; i <datos.length; i++){
+    let dato = datos[i]
+    if (isNaN(dato))
+    {console.log(i);return true} 
+  }
+  return false
+}
 eventoController.post("/", (req, res) => {
-  //EL SUPER HIPER MEGA VALIDAZO (perdon)
   let error = false;
-  let name = req.body.name != undefined ? req.body.name : (error = true);
-
+  let name = req.body.name 
+  
+//la validacion
   let description =
-    req.body.description != undefined
-      ? req.body.description
-      : (error = true);
-  console.log(error)
+    req.body.description ;
+    error=ValidarStrings([name,description])
+    
   let id_event_category = Number(req.body.id_event_category);
-  id_event_category =
-    !isNaN(id_event_category) ? req.body.id_event_category : (error = true);
   let id_event_location = Number(req.body.id_event_location);
-
-  id_event_location =
-    !isNaN(id_event_location) ? id_event_location : (error = true);
   let start_date = Date.parse(req.body.start_date);
-  start_date = !isNaN(start_date) ? req.body.start_date : (error = true);
   let duration_in_minutes = Number(req.body.duration_in_minutes);
-  duration_in_minutes =
-    !isNaN(duration_in_minutes) ? duration_in_minutes : (error = true);
   let price = Number(req.body.price);
-  price = !isNaN(price) ? price : (error = true);
   let enabled_for_enrollment = Number(req.body.enabled_for_enrollment);
-  enabled_for_enrollment =
-    !isNaN(enabled_for_enrollment) ? enabled_for_enrollment : (error = true);
   let max_assistance = Number(req.body.max_assistance);
-  max_assistance = !isNaN(req.body.max_assistance) ? max_assistance : (error = true);
   let id_creator_user = Number(req.body.id_creator_user);
-  id_creator_user = !isNaN(id_creator_user) ? id_creator_user : (error = true);
+  error=ValidarNumeros([id_event_category,id_event_location,start_date,duration_in_minutes,price,enabled_for_enrollment,max_assistance,id_creator_user])
 
   if (error) {
     return res.json("Datos no validos");
   } else {
     let object = {
-      name: name,
-      description: description,
-      id_event_category: id_event_category,
-      id_event_location: id_event_location,
-      start_date: start_date,
-      duration_in_minutes: duration_in_minutes,
-      price: price,
-      enabled_for_enrollment: enabled_for_enrollment,
-      max_assistance: max_assistance,
-      id_creator_user: id_creator_user,
+      "name": name,
+      "description": description,
+      "id_event_category": id_event_category,
+      "id_event_location": id_event_location,
+      "start_date": start_date,
+      "duration_in_minutes": duration_in_minutes,
+      "price": price,
+      "enabled_for_enrollment": enabled_for_enrollment,
+      "max_assistance": max_assistance,
+      "id_creator_user": id_creator_user,
     };
     return res.json(eventoService.PostEvent(object)); // funcion que crea evento
   }

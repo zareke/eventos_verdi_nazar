@@ -44,11 +44,11 @@ export default class EventRepository {
     }
   }
 
-  async postEvent(pageSize,requestedPage,eventoObj){
+  async postEvent(eventoObj){
     try {
        
       const values = [eventoObj] 
-    const sql = "insert into events set ?";
+    const sql = "insert into events (name,description,id_event_category,id_event_location,start_date,duration_in_minutes,price,enabled_for_enrollment,max_assistance,id_creator_user) values ?";
     const eventos = await this.DBClient.query(sql, values);
     return eventos.rows;
   } catch (error) {
