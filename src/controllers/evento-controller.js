@@ -91,6 +91,7 @@ eventoController.post("/", (req, res) => {
   let id_event_location = Number(req.body.id_event_location);
   let start_date = Date.parse(req.body.start_date);
   let duration_in_minutes = Number(req.body.duration_in_minutes);
+
   let price = Number(req.body.price);
   let enabled_for_enrollment = Number(req.body.enabled_for_enrollment);
   let max_assistance = Number(req.body.max_assistance);
@@ -124,39 +125,18 @@ eventoController.patch("/:id", (req, res) => {
   let name = req.body.name
 
   let description = req.body.description
-  let id_event_category = Number(req.body.id_event_category);
-  if (req.body.id_event_category != undefined) {//si esta definido, chequear que sea un numero. 
-    id_event_category =
-      !isNaN(id_event_category) ? req.body.id_event_category : (error = true);
-  } else id_event_category = req.body.id_event_category
-  let id_event_location = Number(req.body.id_event_location);
-  if (req.body.id_event_location != undefined) {
-    id_event_location =
-      !isNaN(id_event_location) ? id_event_location : (error = true);
-  } else id_event_location = req.body.id_event_location
-  let start_date = Date.parse(req.body.start_date);
-  if (req.body.start_date != undefined) {
-    start_date = !isNaN(start_date) ? req.body.start_date : (error = true);
-  } else start_date = req.body.start_date
-  let duration_in_minutes = Number(req.body.duration_in_minutes);
-  if (req.body.duration_in_minutes != undefined) {
-    duration_in_minutes =
-      !isNaN(duration_in_minutes) ? duration_in_minutes : (error = true);
-  } else duration_in_minutes = req.body.duration_in_minutes
-  let price = Number(req.body.price);
-  if (req.body.price != undefined) {
-    price = !isNaN(price) ? price : (error = true);
-  } else price = req.body.price
-  let enabled_for_enrollment = Number(req.body.enabled_for_enrollment);
-  if (req.body.enabled_for_enrollment != undefined) {
-    enabled_for_enrollment =
-      !isNaN(enabled_for_enrollment) ? enabled_for_enrollment : (error = true);
-  } else enabled_for_enrollment = req.body.enabled_for_enrollment
-  let max_assistance = Number(req.body.max_assistance);
-  if (req.body.max_assistance != undefined) { max_assistance = !isNaN(req.body.max_assistance) ? max_assistance : (error = true); } else max_assistance = req.body.max_assistance
-  let id_creator_user = Number(req.body.id_creator_user);
-  if (req.body.id_creator_user != null) { id_creator_user = !isNaN(id_creator_user) ? id_creator_user : (error = true); } else id_creator_user = req.body.id_creator_user
+  error=ValidarStrings([name,description])
 
+  let id_event_category = Number(req.body.id_event_category);
+  let id_event_location = Number(req.body.id_event_location);
+  let start_date = Date.parse(req.body.start_date);
+  let price = Number(req.body.price);
+  let enabled_for_enrollment = Number(req.body.enabled_for_enrollment);
+  let max_assistance = Number(req.body.max_assistance);
+  
+  let duration_in_minutes = Number(req.body.duration_in_minutes);
+  let id_creator_user = Number(req.body.id_creator_user);
+  error=ValidarNumeros([id_event_category,id_event_location,start_date,duration_in_minutes,price,enabled_for_enrollment,max_assistance,id_creator_user])
   if (error) {
     return res.json("Datos no validos");
   } else {
@@ -172,7 +152,7 @@ eventoController.patch("/:id", (req, res) => {
       max_assistance: max_assistance,
       id_creator_user: id_creator_user,
     };
-    return res.json(eventoService.EditEvent(req.params.id, object)); // funcion que crea evento
+    return res.json(eventoService.patchEvent(req.params.id, object)); // funcion que crea evento
   }
 });
 eventoController.delete("/:id", (req, res) => {

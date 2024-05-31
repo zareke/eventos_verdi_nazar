@@ -20,6 +20,9 @@ export default class  Users {
 
     Register(fn,ln,u,p){
         //const query = `insert into user values (${fn},${ln},${u},${p})`
+        const userRepo = new UsersRepository()
+        userRepo.register(fn,ln,u,p)
+        
         return {
             "fn":fn,
             "ln":ln,

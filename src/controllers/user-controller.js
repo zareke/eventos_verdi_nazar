@@ -19,10 +19,11 @@ const userMiddleware = async function (req, res, next) {
   catch(error){
     res.json("token no valido o expirado")
   }
-  next();
+  next(); 
 
 }
 
+//6
 userController.get("/login", async (req, res) => {
   
   const loggedin = await userService.Login(req.query.username, req.query.password); //devuelve  true o false si ando o no andó
@@ -56,7 +57,7 @@ if (loggedin[0].user_exists != -1) {
   }
 });
 
-userController.post("/register", (req, res) => {
+userController.post("/register", (req, res) => { //anda 👌
   let error = false;
   let first_name =
     typeof req.body.first_name == "string" && req.body.first_name!=null
@@ -73,9 +74,12 @@ userController.post("/register", (req, res) => {
     req.body.password!=null && req.body.password.toString().length > 7
       ? req.body.password
       : (error = "la contraseña es no valida"); 
+
+
+  
   if (error == false) {
-    
-    return res.status(201).send(userService.Register(first_name,last_name,username,password));
+    userService.Register(first_name,last_name,username,password)
+    return res.status(201);
     
   } else if (error == "la contraseña es no valida") {
     return res.status(400).send({

@@ -98,10 +98,12 @@ export default class Eventos {
     returnEntity = await eventrepo.postEvent(object)
     return returnEntity
   }
-  EditEvent(id,object)
+  patchEvent(id,object)
   {
-      //la increible magistrar query en vez de esto
-      return object
+    let returnEntity = null
+    const eventrepo = new EventsRepository()
+    returnEntity = await eventrepo.patchEvent(id,object)
+    return returnEntity
   }
   EliminarEvento(id){
     //query para eliminarlo

@@ -78,4 +78,21 @@ export default class EventRepository {
       console.error("Error al insertar evento:", error);
     }
   }
+  async patchEvent(id, eventoObj) {
+    try {
+      
+  
+  
+      // Asumiendo que tienes un campo 'id' para identificar el evento
+      const eventId = eventoObj
+  
+      const sql = `UPDATE events SET ??? WHERE id = $${id}`;
+      
+      const result = await this.DBClient.query(sql, values);
+      return result.rows;
+    } catch (error) {
+      console.error("Error al actualizar evento:", error);
+    }
+  }
+  
 }
