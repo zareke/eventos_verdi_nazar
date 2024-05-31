@@ -1,19 +1,26 @@
-import Express from "express";
+import Express, { response } from "express";
 const userController = Express.Router();
 import Users from "../service/user-service.js";
 import Eventos from "../service/evento-service.js" // que importe el service de user
 const eventoService = new Eventos();
 const userService = new Users();
 import jwt from 'jsonwebtoken'
-//hola zarek y dante del futuro les dejo comentarios para que entiendan mi codigo a la hora de hacer el service -dante del pasado
-let token
+const secretkey = "ariaverdienspotify"
 
-const userMiddleware = function (req, res, next) {
+
+const userMiddleware = async function (req, res, next) {
   
   let sentToken=req.headers.authorization.split(" ")[1]
   
-  if (sentToken==)  
-  
+  let payloadOriginal= null
+  try{
+    payloadOriginal= await jwt.verify(sentToken, secretkey)
+  }
+  catch(error){
+    res.json("token no valido o expirado")
+  }
+  next();
+
 }
 
 userController.get("/login", async (req, res) => {
@@ -27,13 +34,13 @@ userController.get("/login", async (req, res) => {
     expiresIn:'1h',
     issuer:'hangover'
   }
-  const secretkey = "ariaverdienspotify"
+
   const payload={
     id : loggedin[0].user_exists
   }
 
 
-  token = jwt.sign(payload,secretkey,options)
+  const token = jwt.sign(payload,secretkey,options)
 
   
 

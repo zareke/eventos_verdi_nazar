@@ -44,15 +44,38 @@ export default class EventRepository {
     }
   }
 
-  async postEvent(eventoObj){
+  async postEvent(eventoObj) {
     try {
-       
-      const values = [eventoObj] 
-    const sql = "insert into events (name,description,id_event_category,id_event_location,start_date,duration_in_minutes,price,enabled_for_enrollment,max_assistance,id_creator_user) values ?";
-    const eventos = await this.DBClient.query(sql, values);
-    return eventos.rows;
-  } catch (error) {
-    console.error("Error al obtener eventos:", error);
-  }
+      const columns = [
+        'name', 'description', 'id_event_category', 'id_event_location', 'start_date',
+        'duration_in_minutes', 'price', 'enabled_for_enrollment', 'max_assistance', 'id_creator_user'
+      ];
+  
+      // Convertir el timestamp de start_date a un objeto Date si es necesario
+      const startDate = new Date(eventoObj.start_date);
+      
+      const values = [
+        eventoObj.name, eventoObj.description, eventoObj.id_event_category, eventoObj.id_event_location,
+        startDate, // Asegúrate de que este sea un objeto Date válido
+        eventoObj.duration_in_minutes, eventoObj.price, eventoObj.enabled_for_enrollment,
+        eventoObj.max_assistance, eventoObj.id_creator_user
+      ];
+  
+      // Construir los marcadores de posición dinámicamente
+      const placeholders = columns.map((_, index) => `$${index + 1}`).join(', ');
+  
+      // Construir la consulta SQL
+      const sql = `
+        INSERT INTO events (${columns.join(', ')})
+        VALUES (${placeholders})
+        RETURNING *;
+      `;
+  
+      console.log(eventoObj);
+      const result = await this.DBClient.query(sql, values);
+      return result.rows;
+    } catch (error) {
+      console.error("Error al insertar evento:", error);
+    }
   }
 }
