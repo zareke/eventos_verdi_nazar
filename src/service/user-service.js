@@ -23,12 +23,7 @@ export default class  Users {
         const userRepo = new UsersRepository()
         userRepo.register(fn,ln,u,p)
         
-        return {
-            "fn":fn,
-            "ln":ln,
-            "u":u,
-            "p":p
-        }
+        return "👍"
     }
 
     ObtenerUserByEventId(first_name,last_name,username,attended,rating,pageSize,page, eventFromId){

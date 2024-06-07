@@ -30,7 +30,7 @@ export default class EventRepository {
       try{
         const sql = "INSERT INTO users (first_name, last_name, username, password) VALUES ($1, $2, $3, $4)"
         const anduvo = await this.DBClient.query(sql,[f,l,u,p])
-        console.log(anduvo)
+        return "👍"
       }
       catch (error){
         console.error("error al registrar usuario",error)

@@ -15,16 +15,14 @@ var evento = {
 const userMiddleware = async function (req, res, next) {
   
 
-  let sentToken=req.headers.authorization.split(" ")[1]
-
-  
   let payloadOriginal= null
   try{
+    let sentToken=req.headers.authorization.split(" ")[1]
     payloadOriginal= await jwt.verify(sentToken, secretkey)
     
   }
   catch(error){
-    res.status(401).json("token no valido o expirado")
+    return res.status(401).json("token no valido o expirado")
   }
  
   req.id=payloadOriginal.id
@@ -104,22 +102,33 @@ function ValidarNumeros(numbers) {
   );
 }
 function ValidarNumerosEstricto(numeros) {
-  return numeros.some(num => typeof num !== 'number' || isNaN(num) || num === null);
+  numeros.forEach(element => {
+    if(element == undefined || isNaN(element)) {
+      return true
+    }
+  });
+  return false
 }
 function ValidarStringsEstricto(strings) {
-  return strings.some(str => typeof str !== 'string' || str.trim().length <= 3);
+   strings.forEach(element => {
+    if(element == undefined || element.length < 3){
+        return true
+    }
+
+  });
+  return false
 }
 
 
 eventoController.post("/", userMiddleware, (req, res) => {
   let error = false;
-  let name = req.body.name;
+  let name = req.body.name; 
 
   
 
   //la validacion
-  let description = req.body.description;
-  error = ValidarStringsEstricto([name, description]);
+  let description = req.body.description; 
+  error = ValidarStringsEstricto([name, description]); 
 
   let id_event_category = Number(req.body.id_event_category);
   let id_event_location = Number(req.body.id_event_location);
@@ -127,9 +136,9 @@ eventoController.post("/", userMiddleware, (req, res) => {
   let duration_in_minutes = Number(req.body.duration_in_minutes);
   
   let price = Number(req.body.price);
-  let enabled_for_enrollment = Number(req.body.enabled_for_enrollment);
+  let enabled_for_enrollment = Number(req.body.enabled_for_enrollment); 
   let max_assistance = Number(req.body.max_assistance);
-  let id_creator_user = req.id
+  let id_creator_user = req.id 
   error = ValidarNumerosEstricto([
     id_event_category,
     id_event_location,
@@ -138,8 +147,9 @@ eventoController.post("/", userMiddleware, (req, res) => {
     price,
     enabled_for_enrollment,
     max_assistance,
-    id_creator_user,
+    id_creator_user, 
   ]);
+  error = enabled_for_enrollment ===1 || enabled_for_enrollment ===0
   if(error==false){
   let max_capacity = eventoService.getMaxCapacity(id_event_location)
   if(max_assistance > max_capacity){
@@ -163,7 +173,7 @@ if(error==false){
       name: name,
       description: description,
       id_event_category: id_event_category,
-      id_event_location: id_event_location,
+      id_event_location: id_event_location, //proba ahora 
       start_date: start_date,
       duration_in_minutes: duration_in_minutes,
       price: price,
@@ -171,11 +181,16 @@ if(error==false){
       max_assistance: max_assistance,
       id_creator_user: id_creator_user,
     };
-    return res.status(201).json(eventoService.PostEvent(object));
+    eventoService.PostEvent(object)
+    return res.status(201).json("evento creado");
   }
 });
 //HACER VALIDACIONES DE PATCH
-eventoController.patch("/:id", async (req, res) => {
+eventoController.patch("/:id", userMiddleware, async (req, res) => {
+  const event = await eventoService.getEventoById(req.params.id);
+  if(Object.keys(event).length == 0){
+    res.status(404).json("Evento no existe")
+  }
   // Validar que haya al menos un dato para actualizar
   if (!Object.values(req.body).some((i) => i != null)) {
     return res.json("NO HAY NINGUN DATO PARA EDITAR");
