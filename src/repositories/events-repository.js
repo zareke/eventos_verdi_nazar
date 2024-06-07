@@ -117,9 +117,32 @@ export default class EventRepository {
     }
   }
 
+  async anyEnrolled(eventid){
+    try{
+      let values = [eventid]
+    
+    const sql ="select * from event_enrollments where id_event = $1"
+    let any = await this.DBClient.query(sql,values)
+    if(any.rowCount > 0){
+      return true
+    }
+    else return false
+    }
+    catch (error){
+      console.error("error al checkear si esta alguien enrolled?")
+    }
+  }
 
-  async deleteEvent(){
+  async deleteEvent(id){
+      try {let values=[id]
 
+
+      const sql = "delete from events where id=$1"
+      const deleted=await this.DBClient.query(sql,values)
+      return deleted}
+      catch(error){
+        console.error("error al borrar evento: ",error)
+      }
   }
   async getMaxCapacity(idlocation){
     try {

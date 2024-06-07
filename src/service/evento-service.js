@@ -114,8 +114,13 @@ export default class Eventos {
   async EliminarEvento(id){
     let returnEntity = null
     const eventrepo = new EventsRepository()
+    if (!(await eventrepo.anyEnrolled(id)))
+    {    
     returnEntity = await eventrepo.deleteEvent(id)
-    return returnEntity
+    console.log("returnentity " ,returnEntity)
+    return true
+    }
+    else return false
   }
   patchEnrollment(
     eventoId,

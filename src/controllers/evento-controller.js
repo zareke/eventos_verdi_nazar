@@ -103,7 +103,7 @@ function ValidarNumeros(numbers) {
 }
 function ValidarNumerosEstricto(numeros) {
   numeros.forEach(element => {
-    if(element == undefined || isNaN(element)) {
+    if(element == undefined || isNaN(element) || element == null || typeof element !== "number") {
       return true
     }
   });
@@ -138,7 +138,7 @@ eventoController.post("/", userMiddleware, (req, res) => {
   let price = Number(req.body.price);
   let enabled_for_enrollment = Number(req.body.enabled_for_enrollment); 
   let max_assistance = Number(req.body.max_assistance);
-  let id_creator_user = req.id 
+  let id_creator_user = Number(req.body.id_creator_user) 
   error = ValidarNumerosEstricto([
     id_event_category,
     id_event_location,
@@ -149,7 +149,7 @@ eventoController.post("/", userMiddleware, (req, res) => {
     max_assistance,
     id_creator_user, 
   ]);
-  error = enabled_for_enrollment ===1 || enabled_for_enrollment ===0
+  error = !(enabled_for_enrollment ===1 || enabled_for_enrollment ===0)
   if(error==false){
   let max_capacity = eventoService.getMaxCapacity(id_event_location)
   if(max_assistance > max_capacity){
@@ -186,10 +186,10 @@ if(error==false){
   }
 });
 //HACER VALIDACIONES DE PATCH
-eventoController.patch("/:id", userMiddleware, async (req, res) => {
+eventoController.patch("/:id", userMiddleware, async (req, res) => { 
   const event = await eventoService.getEventoById(req.params.id);
-  if(Object.keys(event).length == 0){
-    res.status(404).json("Evento no existe")
+  if(Object.keys(event).length == 0){  
+    return res.status(404).json("El evento no existe")
   }
   // Validar que haya al menos un dato para actualizar
   if (!Object.values(req.body).some((i) => i != null)) {
@@ -232,6 +232,7 @@ eventoController.patch("/:id", userMiddleware, async (req, res) => {
         } else {
           error = true;
         }
+       
       } else {
         objetoActualizacion[campo] = req.body[campo];
         stringsAValidar.push(req.body[campo]);
@@ -239,34 +240,43 @@ eventoController.patch("/:id", userMiddleware, async (req, res) => {
     }
   });
 
+
   // Validar los strings y los números solo si existen
   error = error || ValidarStrings(stringsAValidar) || ValidarNumeros(numerosAValidar);
-  if(error == false){
-    
+  if(req.body["name"] != undefined && req.body["name"].length < 3){
+    error = true
+  }
+  if(req.body["description"] != undefined && req.body["description"].length < 3){
+    error = true
   }
   if (error) {
-    return res.json("Datos no válidos");
+    return res.status(404).json("Datos no válidos");
   } else {
     try {
       const result = await eventoService.patchEvent(req.params.id, objetoActualizacion);
       return res.status(200).json(result);
     } catch (error) {
       console.error("Error al actualizar el evento:", error);
-      return res.status(500).json("Error interno del servidor");
+      return res.status(404).json("Error interno del servidor");
     }
   }
 });
 
-eventoController.delete("/:id", (req, res) => {
-  if (eventoService.getEventoById(req.params.id) != undefined)
-    return res.json(eventoService.EliminarEvento(req.params.id));
-  else return res.json("Ese evento no existe");
-});
+eventoController.delete("/:id", userMiddleware,async (req, res) => {
+  if (eventoService.getEventoById(req.params.id) != undefined){
+    const borrado=(await eventoService.EliminarEvento(req.params.id))
+       
+    if (borrado) {return res.status(200).json("borrado correctamente");}
+    else {return res.status(400).json("Hay usuarios registrados en el evento")}
+  }
+  else {return res.status(401).json("Ese evento no existe");}
+
+}); 
 
 eventoController.post("/:id/enrollment", (req, res) => {
   if (
     !(
-      /*comentario para zarek dormidoa para que no rompa el codigo gracias aunque ya lo rompi ahre*/ (
+       (
         Number.isInteger(Number(req.query.userId)) &&
         Number.isInteger(Number(req.params.id))
       )
