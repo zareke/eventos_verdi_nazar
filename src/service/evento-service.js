@@ -6,12 +6,7 @@ import sql from 'mssql'
 
 export default class Eventos {
   getAllEventos = async (pageSize, requestedPage) => {
-    //DATOS HARDCODEADO S ESTO HAY Q PONERLO DSPS
-    /* 
-        var query = `select * from events limit ${pageSize}`; //aca hay que hacer un recontra innerjoin para traer todo
-        var query2 = 'select count (*) from events' //si hay un error capaz es q estan las ' en lugar de ´
-        const eventsInDB = query.execute()
-        */
+    
     let returnEntity = null
     
     const eventrepo = new EventsRepository();
@@ -117,7 +112,7 @@ export default class Eventos {
     if (!(await eventrepo.anyEnrolled(id)))
     {    
     returnEntity = await eventrepo.deleteEvent(id)
-    console.log("returnentity " ,returnEntity)
+   
     return true
     }
     else return false

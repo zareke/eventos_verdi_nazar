@@ -1,8 +1,10 @@
 import Express from "express";
 const eventoController = Express.Router();
 import Eventos from "../service/evento-service.js";
-import jwt  from "jsonwebtoken";
-import { secretkey } from "./user-controller.js";
+
+import Middleware from "../../middleware.js";
+
+
 
 var evento = {
   //filtros
@@ -12,24 +14,10 @@ var evento = {
   tag: "",
 };
 
-const userMiddleware = async function (req, res, next) {
-  
 
-  let payloadOriginal= null
-  try{
-    let sentToken=req.headers.authorization.split(" ")[1]
-    payloadOriginal= await jwt.verify(sentToken, secretkey)
-    
-  }
-  catch(error){
-    return res.status(401).json("token no valido o expirado")
-  }
- 
-  req.id=payloadOriginal.id
-  next()
-}
 
 const eventoService = new Eventos();
+const middleware = new Middleware()
 
 eventoController.get("/", async (req, res) => {
   const pageSize = 4;
@@ -102,16 +90,22 @@ function ValidarNumeros(numbers) {
   );
 }
 function ValidarNumerosEstricto(numeros) {
+ 
   numeros.forEach(element => {
-    if(element == undefined || isNaN(element) || element == null || typeof element !== "number") {
-      return true
+    if(isNaN(element)){
+      console.log(" ES NANA")
+        return true
+        
     }
   });
+  
+  
   return false
+
 }
 function ValidarStringsEstricto(strings) {
    strings.forEach(element => {
-    if(element == undefined || element.length < 3){
+    if(element == 'undefined' || element.length < 3){
         return true
     }
 
@@ -120,7 +114,7 @@ function ValidarStringsEstricto(strings) {
 }
 
 
-eventoController.post("/", userMiddleware, (req, res) => {
+eventoController.post("/", middleware.userMiddleware, (req, res) => {
   let error = false;
   let name = req.body.name; 
 
@@ -149,6 +143,8 @@ eventoController.post("/", userMiddleware, (req, res) => {
     max_assistance,
     id_creator_user, 
   ]);
+  
+  console.log(error + "ESSTO")
   error = !(enabled_for_enrollment ===1 || enabled_for_enrollment ===0)
   if(error==false){
   let max_capacity = eventoService.getMaxCapacity(id_event_location)
@@ -186,7 +182,7 @@ if(error==false){
   }
 });
 //HACER VALIDACIONES DE PATCH
-eventoController.patch("/:id", userMiddleware, async (req, res) => { 
+eventoController.patch("/:id", middleware.userMiddleware, async (req, res) => { 
   const event = await eventoService.getEventoById(req.params.id);
   if(Object.keys(event).length == 0){  
     return res.status(404).json("El evento no existe")
@@ -262,7 +258,7 @@ eventoController.patch("/:id", userMiddleware, async (req, res) => {
   }
 });
 
-eventoController.delete("/:id", userMiddleware,async (req, res) => {
+eventoController.delete("/:id", middleware.userMiddleware,async (req, res) => {
   if (eventoService.getEventoById(req.params.id) != undefined){
     const borrado=(await eventoService.EliminarEvento(req.params.id))
        

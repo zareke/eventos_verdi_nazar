@@ -5,7 +5,7 @@ import Eventos from "../service/evento-service.js" // que importe el service de 
 const eventoService = new Eventos();
 const userService = new Users();
 import jwt from 'jsonwebtoken'
-export const secretkey = "ariaverdienspotify"
+
 
 
 
