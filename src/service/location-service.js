@@ -23,4 +23,12 @@ async getLocationById(id){
     return returnEntity
 }
 
+async getEventLocationById(id, uid){
+    let returnEntity=null
+    const locationrepo = new LocationRepository()
+    returnEntity=await locationrepo.getEventLocationByLocationId(id,uid)
+    return returnEntity
+}
+
+
 }

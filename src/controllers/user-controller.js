@@ -5,7 +5,7 @@ import Eventos from "../service/evento-service.js" // que importe el service de 
 const eventoService = new Eventos();
 const userService = new Users();
 import jwt from 'jsonwebtoken'
-
+import { secretkey } from "../../middleware.js";
 
 
 
@@ -61,7 +61,7 @@ userController.post("/register", (req, res) => { //anda 👌
       ? req.body.password
       : (error = "la contraseña es no valida"); 
 
-
+  
   
   if (error == false) {
     

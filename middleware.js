@@ -1,5 +1,5 @@
 import jwt  from "jsonwebtoken";
-const secretkey = "ariaverdienspotify"
+export const secretkey = "ariaverdienspotify"
 export default class Middleware{
 
  async userMiddleware (req, res, next) {
@@ -18,5 +18,8 @@ export default class Middleware{
     req.id=payloadOriginal.id
     next()
   }
+
+  //hay que hacer el pagination aca en middleware
+  
 
 }
