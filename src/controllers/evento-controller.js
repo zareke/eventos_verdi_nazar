@@ -83,8 +83,11 @@ eventoController.post("/", middleware.userMiddleware, (req, res) => {
 
   //la validacion
   let description = req.body.description;
+  if(name && description){
   error = ValidarStringsEstricto([name, description]);
-
+  }else{
+    return res.status(400).json("Datos no validos");
+  }
   let id_event_category = Number(req.body.id_event_category);
   let id_event_location = Number(req.body.id_event_location);
   let start_date = Date.parse(req.body.start_date);
@@ -297,14 +300,14 @@ eventoController.patch("/:id/enrollment", (req, res) => {
 
 function ValidarStringsEstricto(strings) {
   strings.forEach((element) => {
-    if (element == "undefined" || element.length < 3) {
+    if (element.length < 3) {
       return true;
     }
   });
   return false;
 }
 function ValidarStrings(strings) {
-  return strings.some((str) => typeof str !== "string" || str.trim() === "");
+  return strings.some((str) => typeof str !== "string" || str.trim() === ""); // el trim aca es para chequear si es vacio, el trim saca los primeros espacios y si despues de eso sigue vacio significa que el string es completamente vacio
 }
 
 function ValidarNumeros(numbers) {

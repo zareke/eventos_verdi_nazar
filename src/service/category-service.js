@@ -1,5 +1,4 @@
 
-import sql from 'mssql'
 import CategoryRepository from '../repositories/category-repository.js'
 export default class Category{
 
@@ -26,7 +25,17 @@ async newCategory(name,dispOrder){
     await categoryRepo.newCategory(name,dispOrder)
 }
 
+async updateCategory(id,name,dispOrder){
 
+    const cr = new CategoryRepository()
+    return await cr.updateCategory(id,name,dispOrder)
+    
 
+}
+
+async deleteCategory(id){
+    const cr = new CategoryRepository()
+    return await cr.deleteCategory(id)
+}
 
 }

@@ -45,12 +45,14 @@ if (loggedin[0].user_exists != -1) {
 
 userController.post("/register", (req, res) => { //anda 👌
   let error = false;
+  
   let first_name =
     typeof req.body.first_name == "string" && req.body.first_name!=null
       ? req.body.first_name
       : (error = true);
   let last_name =
     typeof req.body.last_name == "string" && req.body.last_name!= null ? req.body.last_name : (error = true);
+    
   let username = req.body.username != null && userService.UsernameExists(req.body.username) //no existe username exists 
     ? req.body.username
     : (error = true); 

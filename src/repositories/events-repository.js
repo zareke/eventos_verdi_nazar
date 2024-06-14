@@ -51,17 +51,17 @@ export default class EventRepository {
         'duration_in_minutes', 'price', 'enabled_for_enrollment', 'max_assistance', 'id_creator_user'
       ];
   
-      // Convertir el timestamp de start_date a un objeto Date si es necesario
+      // Convertir el timestamp para que no joda el postgre
       const startDate = new Date(eventoObj.start_date);
       
       const values = [
         eventoObj.name, eventoObj.description, eventoObj.id_event_category, eventoObj.id_event_location,
-        startDate, // Asegúrate de que este sea un objeto Date válido
+        startDate, 
         eventoObj.duration_in_minutes, eventoObj.price, eventoObj.enabled_for_enrollment,
         eventoObj.max_assistance, eventoObj.id_creator_user
       ];
   
-      // Construir los marcadores de posición dinámicamente
+      // eso de (_,index) significa que no se utiliza el valor sino el indice de los elementos del array. Luego lo que hace es que hace que los indices empiecen desde 1 y les agrega el $ y los une con una coma, para poder usarlo en la query
       const placeholders = columns.map((_, index) => `$${index + 1}`).join(', ');
   
       // Construir la consulta SQL
