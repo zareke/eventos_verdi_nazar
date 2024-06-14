@@ -132,7 +132,24 @@ export default class EventRepository {
       console.error("error al checkear si esta alguien enrolled?")
     }
   }
-
+  async setupCascadeDelete() {
+    try {
+      const sql = `
+        ALTER TABLE event_details
+        ADD CONSTRAINT event_details_event_id_fkey
+        FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE;
+      `;//agrega el on delete caSCADE
+      await this.DBClient.query(sql);
+      console.log("restriccion se agrego exitosamente"); 
+    } catch (error) {
+      if (error.code === '42710') { // codigo de error unico: ya existe la constraint
+        console.log("restriccion ya existe");
+      } else {
+        console.error("Error agregando la restriccion: ", error);
+        throw error;  // relanzar el error después de registrarlo
+      }
+    }
+  }
   async deleteEvent(id){
       try {let values=[id]
 

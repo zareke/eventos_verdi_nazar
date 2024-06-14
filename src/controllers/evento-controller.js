@@ -76,6 +76,17 @@ function ValidarNumeros(datos){
   }
   return false
 }*/
+function ValidarNumerosEstricto(numeros) {
+  let fueError=false
+  numeros.forEach((element) => {
+    if (isNaN(element)) {
+      console.log(" ES NANA");
+      fueError=true
+    }
+  });
+
+  return fueError;
+}
 
 eventoController.post("/", middleware.userMiddleware, (req, res) => {
   let error = false;
@@ -109,6 +120,7 @@ eventoController.post("/", middleware.userMiddleware, (req, res) => {
   ]);
 
   console.log(error + "ESSTO");
+  if(error == false)
   error = !(enabled_for_enrollment === 1 || enabled_for_enrollment === 0);
   if (error == false) {
     let max_capacity = eventoService.getMaxCapacity(id_event_location);
@@ -165,22 +177,22 @@ eventoController.patch("/:id", middleware.userMiddleware, async (req, res) => {
     "id_creator_user",
   ];
 
-  let objetoActualizacion = {};
+  let objetoActualizacion = {}; // el objeto en  el que se le agregan los campos para actualizarlo
   let error = false;
-  let stringsAValidar = [];
-  let numerosAValidar = [];
+  let stringsAValidar = []; // para ValidarStrings()
+  let numerosAValidar = [];// para ValidarNumeros()
 
-  // Recorrer los campos esperados y agregar solo los proporcionados
+  // recorrer los campos esperados y agregar solo los dados
   campos.forEach((campo) => {
-    if (req.body[campo] !== undefined) {
+    if (req.body[campo] !== undefined) { //si el campo lo contiene el body...
       if (campo === "start_date") {
         const fecha = new Date(req.body[campo]);
         if (!isNaN(fecha.getTime())) {
-          objetoActualizacion[campo] = fecha.toISOString();
+          objetoActualizacion[campo] = fecha.toLocaleDateString();
         } else {
           error = true;
         }
-      } else if (
+      } else if ( // si tiene algun campo de numeros...
         [
           "id_event_category",
           "id_event_location",
@@ -198,21 +210,21 @@ eventoController.patch("/:id", middleware.userMiddleware, async (req, res) => {
         } else {
           error = true;
         }
-      } else {
+      } else { // si no, es texto
         objetoActualizacion[campo] = req.body[campo];
         stringsAValidar.push(req.body[campo]);
       }
     }
   });
 
-  // Validar los strings y los números solo si existen
+  // validar los strings y los números solo si existen
   error =
     error || ValidarStrings(stringsAValidar) || ValidarNumeros(numerosAValidar);
-  if (req.body["name"] != undefined && req.body["name"].length < 3) {
+  if (req.body["name"] && req.body["name"].length < 3) {
     error = true;
   }
   if (
-    req.body["description"] != undefined &&
+    req.body["description"] &&
     req.body["description"].length < 3
   ) {
     error = true;
@@ -315,15 +327,6 @@ function ValidarNumeros(numbers) {
     (num) => num !== undefined && (isNaN(num) || typeof num !== "number")
   );
 }
-function ValidarNumerosEstricto(numeros) {
-  numeros.forEach((element) => {
-    if (isNaN(element)) {
-      console.log(" ES NANA");
-      return true;
-    }
-  });
 
-  return false;
-}
 
 export default eventoController;

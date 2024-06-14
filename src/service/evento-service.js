@@ -107,7 +107,7 @@ export default class Eventos {
     return returnEntity
   }
   async EliminarEvento(id){
-    let returnEntity = null
+    let returnEntity = null//NOTA PARA ZAREK: PRIMERO LLAMAR A SETUPDELETECASCADE
     const eventrepo = new EventsRepository()
     if (!(await eventrepo.anyEnrolled(id)))
     {    
