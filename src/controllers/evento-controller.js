@@ -15,15 +15,13 @@ var evento = {
 const eventoService = new Eventos();
 const middleware = new Middleware();
 
-eventoController.get("/", async (req, res) => {
-  const pageSize = 4;
-  const page = req.query.page;
+eventoController.get("/", middleware.pagination, async (req, res) => {
+  
   var allEvents;
   let error = false;
 
   Object.values(evento).forEach((i) => (i = ""));
 
-  //LAS VALIDACIONES MITICAS (perdon por el codigo espagueti)
   evento.nombre = req.query.name;
 
   evento.categoria = req.query.category;
@@ -45,10 +43,27 @@ eventoController.get("/", async (req, res) => {
       evento
     );
     return res.json(allEvents);
-  } else {
-    allEvents = await eventoService.getAllEventos(pageSize, page);
+  } 
+  else {
+    const pageSize = req.limit
+    const page = req.offset
+    let total
+    [allEvents, total] = await eventoService.getAllEventos(pageSize, page);
 
-    return res.json(allEvents);
+    res.locals.pagination.total=total
+
+
+    if(res.locals.pagination.offset*res.locals.pagination.limit>=total){
+      res.locals.pagination.nextPage=null
+    }
+
+
+    const response = {
+      events:allEvents.rows,
+      pagination:res.locals.pagination
+  }
+
+    return res.status(200).json(response);
   }
 });
 
@@ -288,7 +303,7 @@ eventoController.post("/:id/enrollment", (req, res) => {
   return res.json(enrollment);
 });
 
-eventoController.patch("/:id/enrollment", (req, res) => {
+eventoController.patch("/:id/enrollment", (req, res) => { //deberia ser delete?
   if (
     !(
       Number.isInteger(Number(req.query.rating)) &&

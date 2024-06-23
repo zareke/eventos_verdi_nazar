@@ -2,17 +2,28 @@ import Express from "express";
 import Category from "../service/category-service.js";
 const categoryController = Express.Router()
 const categoryService = new Category();
+import Middleware from '../../middleware.js'
+const middleware=new Middleware
 
-categoryController.get("/",async (req,res) => { //nota : por favor usar de aca la logica de paginacion
-    const pageSize=4
-    const page = 0
+categoryController.get("/",middleware.pagination,async (req,res) => { 
+    
+    const pageSize = req.limit
+    const page = req.offset
+    
+    let [allCategories,total] = await categoryService.getAllCategories(pageSize,page)
+    
+    res.locals.pagination.total=total
 
-    if (req.query.page !== null && req.query.page !== undefined) {
-        page = parseInt(req.query.page) - 1;
+    if(res.locals.pagination.offset*res.locals.pagination.limit>=total){
+        res.locals.pagination.nextPage=null
     }
 
-    let allCategories = await categoryService.getAllCategories(pageSize,page)
-    return res.status(200).json(allCategories)
+    const response = {
+        categories:allCategories.rows,
+        pagination:res.locals.pagination
+    }
+
+    return res.status(200).json(response)
 })
 
 

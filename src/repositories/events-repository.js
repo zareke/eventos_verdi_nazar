@@ -12,7 +12,11 @@ export default class EventRepository {
       const sql = "SELECT * FROM events OFFSET $1 LIMIT $2;";
       const eventos = await this.DBClient.query(sql, [offset, limit]);
 
-      return eventos.rows;
+      const sql2 = 'SELECT * FROM events'
+      const eventstotal = (await this.DBClient.query(sql2)).rowCount
+
+
+      return [eventos,eventstotal];
     } catch (error) {
       console.error("Error al obtener eventos:", error);
     }

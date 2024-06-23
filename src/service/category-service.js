@@ -7,9 +7,9 @@ async getAllCategories(pageSize,requestedPage){
 
     
     const categoryRepo = new CategoryRepository()
-    let returnEntity = await categoryRepo.getAllCategories(pageSize,requestedPage * pageSize)
+    let [returnEntity,total] = await categoryRepo.getAllCategories(pageSize,requestedPage * pageSize)
 
-    return returnEntity
+    return [returnEntity,total]
 }
 
 async getCategoryById(id){

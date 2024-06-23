@@ -19,7 +19,32 @@ export default class Middleware{
     next()
   }
 
-  //hay que hacer el pagination aca en middleware
-  
+  async pagination(req,res,next){
+
+    if (req.query.limit===undefined || req.query.offset ===undefined){
+      return res.status(400).json("Verifique que haya ingresado limit y offset")
+    }
+    req.limit = req.query.limit
+    req.offset = req.query.offset
+    const nextOffset=Number(req.offset)+1
+    if (req.query.offset !== null && req.query.offset !== undefined && req.offset!=0) {
+      req.offset = parseInt(req.query.offset) - 1;
+    }
+
+
+    let nextPage="http://"+req.get('host') +  req.baseUrl+ "/?limit="+req.limit+"&offset="+nextOffset
+
+
+
+
+    const pagination = {
+      limit: req.limit,
+      offset:Number(req.offset)+1,
+      nextPage:nextPage,
+      total:null
+    }
+    res.locals.pagination=pagination 
+    next()
+  }
 
 }

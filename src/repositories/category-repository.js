@@ -13,7 +13,10 @@ export default class CategoryRepository {
         const sql = 'SELECT * FROM event_categories OFFSET $1 LIMIT $2'
         const cats=await this.DBClient.query(sql,[offset,limit])
 
-        return cats.rows
+        const sql2 = 'SELECT * FROM event_categories'
+        const catstotal = (await this.DBClient.query(sql2)).rowCount
+
+        return [cats,catstotal]
     }
     catch(e){
         console.error("Error al traer todas las categorias: ",e)
