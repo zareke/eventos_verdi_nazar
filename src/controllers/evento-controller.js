@@ -1,8 +1,10 @@
 import Express from "express";
 const eventoController = Express.Router();
 import Eventos from "../service/evento-service.js";
-
+import event_enrollment from "../models/event_enrollments.js";
 import Middleware from "../../middleware.js";
+import EventRepository from "../repositories/events-repository.js";
+import Events from "../models/events.js";
 
 var evento = {
   //filtros
@@ -53,13 +55,13 @@ eventoController.get("/", middleware.pagination, async (req, res) => {
     res.locals.pagination.total=total
 
 
-    if(res.locals.pagination.offset*res.locals.pagination.limit>=total){
-      res.locals.pagination.nextPage=null
+    if(Number(res.locals.pagination.page)*Number(res.locals.pagination.limit)>=total){
+      res.locals.pagination.nextPage=null 
     }
 
 
     const response = {
-      events:allEvents.rows,
+      collection:allEvents.rows,
       pagination:res.locals.pagination
   }
 
@@ -103,73 +105,44 @@ function ValidarNumerosEstricto(numeros) {
   return fueError;
 }
 
-eventoController.post("/", middleware.userMiddleware, (req, res) => {
-  let error = false;
-  let name = req.body.name;
+eventoController.post("/", middleware.userMiddleware, async (req, res) => {
+  try{
+    let evento = new Events
 
-  //la validacion
-  let description = req.body.description;
-  if(name && description){
-  error = ValidarStringsEstricto([name, description]);
-  }else{
-    return res.status(400).json("Datos no validos");
+    evento.name=req.body.name
+    evento.description=req.body.description
+    
+    if (evento.name.length < 3 || evento.description.length < 3)
+      throw new Error ("datos no validos")
+    
+    
+    evento.max_assistance=req.body.max_assistance
+    evento.id_event_location=req.body.id_event_location
+    
+    if (eventoService.getMaxCapacity(evento.id_event_location) < max_assistance)
+      throw new Error ("datos no validos")
+    
+    
+    evento.price = req.body.price
+    evento.duration_in_minutes=req.body.duration_in_minutes
+    
+    if (evento.price<=0 || evento.duration_in_minutes<=0)
+      throw new Error("Datos no validos")
+  
+    evento.enabled_for_enrollment=req.body.enabled_for_enrollment
+    evento.id_creator_user=req.id
+    evento.id_event_category=req.body.id_event_category
+    evento.start_date = req.body.startDate
+    
+    await eventoService.PostEvent(evento)
+    return res.status(201).json("Evento creado")
   }
-  let id_event_category = Number(req.body.id_event_category);
-  let id_event_location = Number(req.body.id_event_location);
-  let start_date = Date.parse(req.body.start_date);
-  let duration_in_minutes = Number(req.body.duration_in_minutes);
-
-  let price = Number(req.body.price);
-  let enabled_for_enrollment = Number(req.body.enabled_for_enrollment);
-  let max_assistance = Number(req.body.max_assistance);
-  let id_creator_user = Number(req.body.id_creator_user);
-  error = ValidarNumerosEstricto([
-    id_event_category,
-    id_event_location,
-    start_date,
-    duration_in_minutes,
-    price,
-    enabled_for_enrollment,
-    max_assistance,
-    id_creator_user,
-  ]);
-
-  console.log(error + "ESSTO");
-  if(error == false)
-  error = !(enabled_for_enrollment === 1 || enabled_for_enrollment === 0);
-  if (error == false) {
-    let max_capacity = eventoService.getMaxCapacity(id_event_location);
-    if (max_assistance > max_capacity) {
-      error = true;
-    }
-  }
-  if (error == false) {
-    if (price < 0 || duration_in_minutes < 0) {
-      error = true;
-    }
-  }
-
-  if (error) {
-    return res.status(400).json("Datos no validos");
-  } else {
-    let object = {
-      name: name,
-      description: description,
-      id_event_category: id_event_category,
-      id_event_location: id_event_location, //proba ahora
-      start_date: start_date,
-      duration_in_minutes: duration_in_minutes,
-      price: price,
-      enabled_for_enrollment: enabled_for_enrollment,
-      max_assistance: max_assistance,
-      id_creator_user: id_creator_user,
-    };
-    eventoService.PostEvent(object);
-    return res.status(201).json("evento creado");
+  catch(error){
+    return res.status(400).json("Datos no validos")
   }
 });
 //HACER VALIDACIONES DE PATCH
-eventoController.patch("/:id", middleware.userMiddleware, async (req, res) => {
+eventoController.patch("/:id", middleware.userMiddleware, async (req, res) => { //codigo feisimo deberia ser muchisimo mas corto, hay q empezar from scratch
   const event = await eventoService.getEventoById(req.params.id);
   if (Object.keys(event).length == 0) {
     return res.status(404).json("El evento no existe");
@@ -274,55 +247,74 @@ eventoController.delete("/:id", middleware.userMiddleware, async (req, res) => {
   }
 });
 
-eventoController.post("/:id/enrollment", (req, res) => {
-  if (
-    !(
-      Number.isInteger(Number(req.query.userId)) &&
-      Number.isInteger(Number(req.params.id))
-    )
-  ) {
-    return res.json(
-      "No hay ningun parametro de id de usuario o/y el id de evento no existe"
-    );
+eventoController.post("/:id/enrollment",middleware.userMiddleware, async (req, res) => { //esto funciona y es muy dificil de checkear, asumir que funciona bastante bien
+
+  const userId=req.id
+  const eventId=req.params.id
+
+  let eventEnrollment = new event_enrollment
+
+  eventEnrollment.id_event=eventId
+  eventEnrollment.id_user=userId
+  eventEnrollment.description = req.body.description == null || req.body.description == undefined ? null : req.body.description
+  const now = new Date()
+  eventEnrollment.registration_date_time =now
+  eventEnrollment.attended=null
+  eventEnrollment.observations=null
+  eventEnrollment.rating=null
+  
+  if(!(eventoService.eventoExists(eventId))){
+    return res.status(404).json("El evento no existe")
   }
 
-  const user = req.query.userId;
-  const evento = req.params.id;
-  const descripcion = "n";
-  const attended = 0;
-  const observations = "o";
-  const rating = 0;
-  const enrollment = eventoService.postNewEnrollment(
-    user,
-    evento,
-    descripcion,
-    attended,
-    observations,
-    rating
-  );
-  return res.json(enrollment);
+  if (await eventoService.checkEventoValido(eventId,userId)){
+    eventoService.newEnrollment(eventEnrollment)
+    return res.status(200).json("Registrado en el evento correctamente")
+  }
+  else return res.status(400).json("datos no validos. Puede que ya este registrado o el evento ya haya pasado")
 });
 
-eventoController.patch("/:id/enrollment", (req, res) => { //deberia ser delete?
-  if (
-    !(
-      Number.isInteger(Number(req.query.rating)) &&
-      Number.isInteger(Number(req.params.id))
-    )
-  ) {
-    return res.json("No hay ningun rating o/y el id de evento no existe");
-  }
+eventoController.delete("/:id/enrollment",middleware.userMiddleware,async (req,res) =>{ //pretty much works
+    const userId=req.id
+    const eventId=req.params.id
 
-  const observations = req.query.observations;
-  const rating = req.query.rating;
-  const enrollment = eventoService.patchEnrollment(
-    "evento",
-    "descripcion",
-    "1",
-    observations,
-    rating
-  );
-  return res.json(enrollment);
+    if (!eventoService.eventoExists(eventId)){
+      return res.status(404).json("El evento no existe")
+    }
+
+    if(await eventoService.isDeletePossible(userId,eventId)){
+      eventoService.DeleteEnrollment(userId,eventId)
+      return res.status(200).json("Suscripcion anulada")
+    }
+    else return res.status(400).json("El evento ya paso o usted no esta registrado en el evento")
+})
+
+eventoController.patch("/:id/enrollment/:rating", middleware.userMiddleware, async (req, res) => { //funciona
+  
+
+  const observations = req.body.observations;
+  const rating = req.params.rating;
+  const userId=req.id
+  const eventId=req.params.id
+  
+  if ((await eventoService.eventoExists(eventId))){
+    return res.status(404).json("El evento no existe")
+  }
+  if (await eventoService.canGiveRating(eventId,userId,rating)){
+    let eventEnrollment = new event_enrollment
+
+    eventEnrollment.observations=observations
+    eventEnrollment.attended=true
+    eventEnrollment.rating=rating
+    eventEnrollment.id_user=userId
+    eventEnrollment.id_event=eventId
+    await eventoService.PatchEventEnrollment(eventEnrollment)
+    return res.status(200).json("Registro actualizado")
+  }
+  else{
+    return res.status(400).json("datos no validos")
+  }
+  
 });
 
 function ValidarStringsEstricto(strings) {

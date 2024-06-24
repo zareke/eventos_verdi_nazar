@@ -13,7 +13,10 @@ export default class LocationRepository {
       const sql = "SELECT * FROM locations OFFSET $1 LIMIT $2;";
       const locations = await this.DBClient.query(sql, [offset, limit]);
 
-      return locations.rows;
+      const sql2 = 'SELECT * FROM locations'
+      const locationsTotal = (await this.DBClient.query(sql2)).rowCount
+
+      return [locations,locationsTotal];
     } catch (error) {
       console.error("Error al obtener eventos:", error);
     }

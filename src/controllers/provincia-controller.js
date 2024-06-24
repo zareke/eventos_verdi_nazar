@@ -3,133 +3,138 @@ const provinciaController = Express.Router();
 import Users from "../service/user-service.js";
 import Eventos from "../service/evento-service.js" // que importe el service de user
 import Provincias from "../service/provincia-service.js" // que importe el service de provincias
+import Provinces from "../models/provinces.js"
 const userService = new Users();
 const eventoService = new Eventos()
 const provinciaService = new Provincias();
-//nota: aparentemente hay que validar TODO
-provinciaController.get("/", (req, res) => {
-  const pageSize = 4;
-  const page = req.query.page;
-  let provinces = provinciaService.SearchProvinces(pageSize, page)
-  return res.json(provinces)
+import Middleware from '../../middleware.js'
+const middleware=new Middleware
+
+
+
+
+
+provinciaController.get("/", middleware.pagination,async (req, res) => { //copiar esta pagination en todos lso paginateds
+  const pageSize = req.limit
+  const offset = req.offset
+
+
+  let [provinces,total] = await provinciaService.getAllProvinces(pageSize, offset)
+
+  res.locals.pagination.total=total
+
+  if(Number(res.locals.pagination.page)*Number(res.locals.pagination.limit)>=total){
+    res.locals.pagination.nextPage=null 
+  }
+
+  const response = {
+    collection:provinces.rows, //all pagination should decir collection en ves de categories
+    pagination:res.locals.pagination
+}
+
+  return res.status(200).json(response)
 
 
 })
-provinciaController.get("/:id", (req, res) => {
+provinciaController.get("/:id", async (req, res) => {
+  
   let id = Number(req.params.id)
 
 
-  if (id != null & !provinciaService.ChequearProvinciaExiste(req.params.id)) //Chequea si existe provincia
-    return res.json("Ese id no existe")
+  let provincia = await provinciaService.getProvinciaById(id)
 
-
-  let province = provinciaService.SearchProvinceById(id)
-  return res.json(province)
-
-
+  if ( provincia.rowCount<1){
+    return res.status(404).json("La provincia no existe")
+  }
+  else{
+    return res.status(200).json(provincia.rows)
+  }
 
 })
-provinciaController.post("/", (req, res) => { // QUEDA SOLUCIONAR EL CHEQUEO DE DATOS
-  let error = false
-  let name =
-    req.body.name != null
-      ? req.body.name
-      : (error = true);
-  let full_name =
-    typeof req.body.full_name != null ? req.body.full_name : (error = true);
-  let latitude = Number(req.body.latitude)
-  latitude =
-    !isNaN(latitude)
-      ? req.body.latitude
-      : (error = true);
-  let longitude = Number(req.body.longitude)
 
-  longitude =
-    !isNaN(longitude)
-      ? req.body.longitude
-      : (error = true);
-  let dO = Number(req.body.display_order)
-  dO =
-    !isNaN(dO)
-      ? req.body.display_order
-      : (error = true);
-  if (error == false) {
-    let province = provinciaService.CreateProvince(name, full_name, latitude, longitude, dO) //funcion que crea provincias
-    return res.json(province)
+provinciaController.get("/:id/locations",middleware.pagination, async (req,res) =>{
 
-  } else {
-    return res.status(400).send({
+  const pageSize = req.limit
+  const page = req.offset
 
-      reason: "Datos no validos",
-    });
+  const idProvince = req.params.id
+  let [locations,total] = await provinciaService.getAllLocationsProvince(pageSize, page,idProvince)
+  if(locations.rowCount<1){
+    return res.status(404).json("Provincia no encontrada")
   }
 
+  res.locals.pagination.total=total
+
+  if(res.locals.pagination.offset*res.locals.pagination.limit>=total){
+    res.locals.pagination.nextPage=null 
+  }
+
+  const response = {
+    categories:locations.rows,
+    pagination:res.locals.pagination
+}
+
+  return res.status(200).json(response)
 
 })
-provinciaController.patch("/:id", (req, res) => {
-  /* if(SearchProvinceById(req.params.id) == null){//      <------- POR AHORA NO PODEMOS HACER ESTO PORQUE NO TENEMOS LA QUERY
-     return res.status(400).send({
- 
-       reason: "ID no existe",
-     });
-   }*/ //      <------- POR AHORA NO PODEMOS HACER ESTO PORQUE NO TENEMOS LA QUERY
-  if (!Object.values(req.body).some((i) => i != null) || !Object.keys(req.body).some((i) => i == "name" || i == "full_name" || i == "latitude" || i == "longitude" || i == "display_order")) {
-    return res.json("NO HAY NINGUN DATO PARA EDITAR")
+
+
+provinciaController.post("/", async (req, res) => { 
+
+  try{
+    let provincia = new Provinces
+    if (req.body.name == undefined || req.body.name == null || req.body.name.length<3 || isNaN(req.body.latitude) || isNaN(req.body.longitude)){
+      throw new Error("Datos no validos")
+    }
+    provincia.name=req.body.name
+    provincia.full_name=req.body.full_name
+    provincia.latitude=req.body.latitude
+    provincia.longitude=req.body.longitude
+    provincia.display_order=req.body.display_order
+    await provinciaService.newProvincia(provincia)
+    return res.status(201).json("Provincia creada")
   }
-  let error = false
-  let name = req.body.name
-  let full_name = req.body.full_name
-  let latitude = Number(req.body.latitude)
-  if (req.body.latitude != undefined) {
-
-
-    latitude =
-      !isNaN(latitude)
-        ? req.body.latitude
-        : (error = true);
-  } else latitude = req.body.latitude
-  let longitude = Number(req.body.longitude)
-  if (req.body.longitude != undefined) {
-    longitude =
-      !isNaN(longitude)
-        ? req.body.longitude
-        : (error = true);
-  } else longitude = req.body.longitude
-  let dO = Number(req.body.display_order)
-  if (req.body.display_order != undefined) {
-
-    dO =
-      !isNaN(dO)
-        ? req.body.display_order
-        : (error = true);
-  } else dO = req.body.display_order
- 
-  if (error == false) {
-    let province = provinciaService.EditarPorId(name, full_name, latitude, longitude, dO, req.params.id) //funcion que edita
-    return res.json(province)
-
-  } else {
-    return res.status(400).send({
-
-      reason: "Datos no validos",
-    });
+  catch (e){
+    return res.status(400).json("Datos no validos")
   }
-
 
 })
-provinciaController.delete("/:id", (req, res) => {
-  let id = provinciaService.ChequearProvinciaExiste(req.params.id)
-  if (id) {
-    let province = provinciaService.DeleteProvince(id) //funcion que elimina provincias
-    return res.json(province)
+provinciaController.put("/", async (req, res) => {
+    try{
+      const provincia = new Provinces
 
-  } else {
-    return res.status(400).send({
+      if (req.body.name == undefined || req.body.name == null || req.body.name.length<3 || isNaN(req.body.latitude) || isNaN(req.body.longitude)){
+        throw new Error("Datos no validos")
+      }
 
-      reason: "Datos no validos",
-    });
-  }
+      provincia.id=req.body.id
+      provincia.name=req.body.name
+      provincia.full_name=req.body.full_name
+      provincia.latitude=req.body.latitude
+      provincia.longitude=req.body.longitude
+      provincia.display_order=req.body.display_order
+      if ((await provinciaService.UpdateProvincia(provincia)).rowCount<1){
+        return res.status(404).json("Provincia no encontrada")
+      }
+      else return res.status(200).json("Provincia actualizada")
 
+    }
+    catch (e){
+      return res.status(400).json(e)
+    }
+})
+provinciaController.delete("/:id", async (req, res) => {
+
+
+  let id=req.params.id
+
+  let result = await provinciaService.DeleteProvincia(id)
+    if (result.rowCount<1 || Number.isNaN(id)){
+        return res.status(404).json("Provincia no encontrada")
+    }
+    else{
+        return res.status(200).json("Provincia eliminada")
+    }
 
 })
 

@@ -7,7 +7,7 @@ async getAllCategories(pageSize,requestedPage){
 
     
     const categoryRepo = new CategoryRepository()
-    let [returnEntity,total] = await categoryRepo.getAllCategories(pageSize,requestedPage * pageSize)
+    let [returnEntity,total] = await categoryRepo.getAllCategories(pageSize,requestedPage)
 
     return [returnEntity,total]
 }
@@ -20,15 +20,15 @@ async getCategoryById(id){
 
     return returnEntity
 }
-async newCategory(name,dispOrder){
+async newCategory(category){
     const categoryRepo=new CategoryRepository()
-    await categoryRepo.newCategory(name,dispOrder)
-}
+    await categoryRepo.newCategory(category)
+}   
 
-async updateCategory(id,name,dispOrder){
+async updateCategory(cat){
 
     const cr = new CategoryRepository()
-    return await cr.updateCategory(id,name,dispOrder)
+    return await cr.updateCategory(cat)
     
 
 }

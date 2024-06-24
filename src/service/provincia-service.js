@@ -1,83 +1,35 @@
+import ProvinciaRepository from '../repositories/provincia-repository.js'
 export default class Provincias {
-  CreateProvince(name, full_name, latitude, longitude, dO) {
-    //la super query vendria aca en vez de esto:
-    let datoshardcodeados = {
-      name: name,
-      full_name: full_name,
-      latitude: latitude,
-      longitude: longitude,
-      dO: dO,
-    };
-    return datoshardcodeados;
+  async newProvincia(provincia) {
+    const provrepo = new ProvinciaRepository()
+
+    await provrepo.newProvincia(provincia)
   }
-  SearchProvinces(pageSize,requestedPage) {
-    //query
-    let datoshardcodeados = [
-      {
-        name: "BSAS",
-        full_name: "Buenos Aires",
-        latitude: 14,
-        longitude: 214,
-        dO: 1,
-      },
-      {
-        name: "RSR",
-        full_name: "Rosario",
-        latitude: 14,
-        longitude: 214,
-        dO: 1,
-      },
-    ];
-    return {
-      collection: datoshardcodeados, //GOTO 8
-      pagination: {
-        limit: pageSize,
-        offset: requestedPage,
-        nextPage: "http://localhost:3000/event?limit=15&offset=1",
-        total: 100000,
-      }
+  async getAllProvinces(pageSize,requestedPage) {
+    const provRepo = new ProvinciaRepository()
+
+    let [returnEntity,total] = await provRepo.getAllProvincias(pageSize,requestedPage)
+
+    return [returnEntity,total]
   }
+  async getProvinciaById(id) {
+    const provinceRepo = new ProvinciaRepository()
+    let returnEntity = await provinceRepo.getProvinciaById(id)
+    return returnEntity
   }
-  SearchProvinceById(id) {
-    //query
-    let datoshardcodeados = [
-      {
-        name: "RSR",
-        full_name: "Rosario",
-        latitude: 14,
-        longitude: 214,
-        dO: 1,
-      }
-    ];
-    return datoshardcodeados;
+  async DeleteProvincia(id) {
+    const provrepo = new ProvinciaRepository()
+    const returnEntity = await provrepo.DeleteProvincia(id)
+    return returnEntity
   }
-  DeleteProvince(id) {
-    //query
-    let datoshardcodeados = [
-      {
-        "infohardcodeada": "ELIMINADO!",
-        name: "BSAS",
-        full_name: "Buenos Aires",
-        latitude: 14,
-        longitude: 214,
-        dO: 1,
-      },
-    ];
-    return datoshardcodeados;
+  async UpdateProvincia(prov){
+    const provrepo=new ProvinciaRepository()
+    const success = await provrepo.UpdateProvincia(prov)
+    return success
   }
-  EditarPorId(name, full_name, latitude, longitude, dO,id) {
-    //la super query vendria aca en vez de esto:
-    let datoshardcodeados = {
-      name: name,
-      full_name: full_name,
-      latitude: latitude,
-      longitude: longitude,
-      dO: dO,
-    };
-    return datoshardcodeados;
-  }
-  ChequearProvinciaExiste(id){
-    //La super query iria aca
-    return true
+  async getAllLocationsProvince(pageSize,page,idProvince){
+    const provinceRepo = new ProvinciaRepository()
+    let [returnEntity,total] = await provinceRepo.getAllLocationsProvince(pageSize,page,idProvince)
+    return [returnEntity,total]
   }
 }

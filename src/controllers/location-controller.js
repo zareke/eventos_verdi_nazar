@@ -4,14 +4,28 @@ import Middleware from "../../middleware.js";
 const locationController = Express.Router();
 const middleware = new Middleware()
 const locationService = new Location();
+
     
 
-locationController.get("/",async (req,res) =>{ //anda
-    const pageSize = 4
-    const page = req.query.page
+locationController.get("/", middleware.pagination, async (req,res) =>{ //anda
+    const pageSize = req.limit
+    const page = req.offset
 
-    let allLocations = await locationService.getAllLocations(pageSize, page);
-    return res.status(200).json(allLocations)
+    let [allLocations,total] = await locationService.getAllLocations(pageSize, page);
+    
+    res.locals.pagination.total=total
+
+    if(Number(res.locals.pagination.page)*Number(res.locals.pagination.limit)>=total){
+        res.locals.pagination.nextPage=null 
+      }
+
+    const response = {
+        collection:allLocations.rows,
+        pagination:res.locals.pagination
+    }
+    
+    return res.status(200).json(response)
+
 
 })
 

@@ -3,6 +3,7 @@ import Category from "../service/category-service.js";
 const categoryController = Express.Router()
 const categoryService = new Category();
 import Middleware from '../../middleware.js'
+import event_category from "../models/event_categories.js";
 const middleware=new Middleware
 
 categoryController.get("/",middleware.pagination,async (req,res) => { 
@@ -14,12 +15,12 @@ categoryController.get("/",middleware.pagination,async (req,res) => {
     
     res.locals.pagination.total=total
 
-    if(res.locals.pagination.offset*res.locals.pagination.limit>=total){
-        res.locals.pagination.nextPage=null
-    }
+    if(Number(res.locals.pagination.page)*Number(res.locals.pagination.limit)>=total){
+        res.locals.pagination.nextPage=null 
+      }
 
     const response = {
-        categories:allCategories.rows,
+        collection:allCategories.rows,
         pagination:res.locals.pagination
     }
 
@@ -41,38 +42,50 @@ categoryController.get("/:id",async (req,res) => {
 })
 
 categoryController.post("/",async (req,res) => {
-    const name = req.body.name
-    const displayOrder = Number(req.body.display_order)
+    let category = new event_category
+    category.name = req.body.name
+    category.display_order = Number(req.body.display_order)
     
-    if ( name == null || name.length<3){
+    if ( category.name == null || category.name.length<3){
         return res.status(400).json("El nombre no es valido")
     }
     else{
-        await categoryService.newCategory(name,displayOrder)
+        await categoryService.newCategory(category)
         return res.status(201).json("Categoria creada")
 
     }
 
 })
 
-categoryController.put("/",async (req,res) => {
-    const id = req.body.id
-    const name = req.body.name
-    const displayOrder = Number(req.body.display_order)
+import event_category from './event_category'; // Assuming this is how you import your model
 
-    if ( name == null || name.length<3){
-        return res.status(400).json("El nombre no es valido")
+categoryController.put("/", async (req, res) => {
+  try {
+    const updatedCategory = new event_category();
+
+    // Validate input
+    if (req.body.name == null || req.body.name.length < 3) {
+      throw new Error("El nombre no es valido");
     }
-    else{
-        let result = await categoryService.updateCategory(id,name,displayOrder)
-        if (result.rowCount<1){
-            return res.status(404).json("Categoria no encontrada")
-        }
-        else{
-            return res.status(200).json("Categoria cambiada correctamente")
-        }
+
+    updatedCategory.id = req.body.id;
+    updatedCategory.name = req.body.name;
+    updatedCategory.display_order = Number(req.body.display_order);
+
+    const result = await categoryService.updateCategory(
+      updatedCategory
+    );
+
+    if (result.rowCount < 1) {
+      return res.status(404).json("Categoria no encontrada");
+    } else {
+      return res.status(200).json("Categoria cambiada correctamente");
     }
-})
+  } catch (error) {
+    return res.status(400).json(error.message);
+  }
+});
+
 
 categoryController.delete("/:id",async (req,res) => {
     const id=req.params.id

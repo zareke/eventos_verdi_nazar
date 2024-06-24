@@ -48,36 +48,23 @@ export default class EventRepository {
     }
   }
 
-  async postEvent(eventoObj) {
+  async postEvent(evento) {
     try {
-      const columns = [
-        'name', 'description', 'id_event_category', 'id_event_location', 'start_date',
-        'duration_in_minutes', 'price', 'enabled_for_enrollment', 'max_assistance', 'id_creator_user'
-      ];
+      
   
       // Convertir el timestamp para que no joda el postgre
-      const startDate = new Date(eventoObj.start_date);
+      //const startDate = new Date(eventoObj.start_date);
       
       const values = [
-        eventoObj.name, eventoObj.description, eventoObj.id_event_category, eventoObj.id_event_location,
-        startDate, 
-        eventoObj.duration_in_minutes, eventoObj.price, eventoObj.enabled_for_enrollment,
-        eventoObj.max_assistance, eventoObj.id_creator_user
+        evento.name, evento.description, evento.id_event_category, evento.id_event_location,
+        evento.start_date, 
+        evento.duration_in_minutes, evento.price, evento.enabled_for_enrollment,
+        evento.max_assistance, evento.id_creator_user
       ];
   
-      // eso de (_,index) significa que no se utiliza el valor sino el indice de los elementos del array. Luego lo que hace es que hace que los indices empiecen desde 1 y les agrega el $ y los une con una coma, para poder usarlo en la query
-      const placeholders = columns.map((_, index) => `$${index + 1}`).join(', ');
-  
-      // Construir la consulta SQL
-      const sql = `
-        INSERT INTO events (${columns.join(', ')})
-        VALUES (${placeholders})
-        RETURNING *;
-      `;
-  
-      console.log(eventoObj);
+      const sql = "INSERT INTO events (name,description,id_event_category,id_event_location,start_date,duration_in_minutes,price,enabled_for_enrollment,max_assistance,id_creator_user) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)"
       const result = await this.DBClient.query(sql, values);
-      return result.rows;
+      
     } catch (error) {
       console.error("Error al insertar evento:", error);
     }
@@ -175,5 +162,67 @@ export default class EventRepository {
   } catch (error) {
     console.error("Error al obtener eventos:", error);
   }
+  }
+
+  //las siguientes cuatro funciones fueron hechas por claudio
+  async  maxAssistanceReached(idEvent) {
+    const result = await this.DBClient.query(`
+      SELECT COUNT(*) >= e.max_assistance AS reached
+      FROM event_enrollments ee
+      JOIN events e ON ee.id_event = e.id
+      WHERE e.id = $1
+      GROUP BY e.id, e.max_assistance
+    `, [idEvent]);
+    return result.rows[0]?.reached || false;
+  };
+
+  async isPastEvent (idEvent){
+    const result = await this.DBClient.query(`
+      SELECT start_date < CURRENT_DATE AS past_event
+      FROM events
+      WHERE id = $1
+    `, [idEvent]);
+    return result.rows[0]?.past_event || false;
+  };
+
+  async isEnrollmentDisabled (idEvent) {
+    const result = await this.DBClient.query(`
+      SELECT NOT enabled_for_enrollment AS disabled
+      FROM events
+      WHERE id = $1
+    `, [idEvent]);
+    return result.rows[0]?.disabled || false;
+  };
+
+  async isUserRegistered (idEvent, idUser) {
+    const result = await this.DBClient.query(`
+      SELECT EXISTS (
+        SELECT 1
+        FROM event_enrollments
+        WHERE id_event = $1 AND id_user = $2
+      ) AS registered
+    `, [idEvent, idUser]);
+    return result.rows[0]?.registered || false;
+  };
+
+  async eventExists(idevent){ //en realidad seria event not exists
+    const sql = 'SELECT * FROM events WHERE id=$1 limit 1'
+    const result = await this.DBClient.query(sql,[idevent])
+    return result.rowCount<1
+  }
+
+  async newEnrollment(enrlmnt){
+    const sql = 'INSERT INTO event_enrollments (id_event,id_user,description,registration_date_time,attended,observations,rating) values ($1,$2,$3,$4,$5,$6,$7)'
+    await this.DBClient.query(sql,[enrlmnt.id_event,enrlmnt.id_user,enrlmnt.description,enrlmnt.registration_date_time,enrlmnt.attended,enrlmnt.observations,enrlmnt.rating])
+  }
+
+  async DeleteEnrollment(iu,ie){
+    const sql = "DELETE FROM event_enrollments WHERE id_event=$1 and id_user=$2"
+    await this.DBClient.query(sql,[ie,iu])
+  }
+
+  async PatchEventEnrollment(evEnrollment){
+    const sql = "UPDATE event_enrollments SET attended=$1,observations=$2,rating=$3 WHERE id_event=$4 AND id_user=$5"
+    await this.DBClient.query(sql,[evEnrollment.attended,evEnrollment.observations,evEnrollment.rating,evEnrollment.id_event,evEnrollment.id_user])
   }
 }
