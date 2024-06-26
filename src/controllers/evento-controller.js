@@ -107,7 +107,7 @@ function ValidarNumerosEstricto(numeros) {
 
 eventoController.post("/", middleware.userMiddleware, async (req, res) => {
   try{
-    let evento = new Events
+    let evento = new Events()
 
     evento.name=req.body.name
     evento.description=req.body.description
@@ -252,7 +252,7 @@ eventoController.post("/:id/enrollment",middleware.userMiddleware, async (req, r
   const userId=req.id
   const eventId=req.params.id
 
-  let eventEnrollment = new event_enrollment
+  let eventEnrollment = new event_enrollment()
 
   eventEnrollment.id_event=eventId
   eventEnrollment.id_user=userId
@@ -301,7 +301,7 @@ eventoController.patch("/:id/enrollment/:rating", middleware.userMiddleware, asy
     return res.status(404).json("El evento no existe")
   }
   if (await eventoService.canGiveRating(eventId,userId,rating)){
-    let eventEnrollment = new event_enrollment
+    let eventEnrollment = new event_enrollment()
 
     eventEnrollment.observations=observations
     eventEnrollment.attended=true

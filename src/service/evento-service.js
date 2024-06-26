@@ -142,4 +142,5 @@ export default class Eventos {
     const eventrepo = new EventsRepository()
     await eventrepo.PatchEventEnrollment(enrollment)
   }
+  
 }

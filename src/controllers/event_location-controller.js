@@ -45,7 +45,7 @@ eventLocationController.post("/",middleware.userMiddleware,async (req,res) =>{
    
 
    try{
-       const eventlocation = new Event_location
+       const eventlocation = new Event_location()
     
     eventlocation.id_location = Number(req.body.id_location)
 
@@ -89,7 +89,7 @@ eventLocationController.delete("/:id",middleware.userMiddleware,async (req, res)
 eventLocationController.put("/",middleware.userMiddleware,async (req,res) =>{
 
     try{
-    const eventlocation = new Event_location
+    const eventlocation = new Event_location()
         eventlocation.id=req.body.id_event_location
         eventlocation.id_location=req.body.id_location
         eventlocation.name=req.body.name

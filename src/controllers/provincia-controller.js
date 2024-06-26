@@ -82,7 +82,7 @@ provinciaController.get("/:id/locations",middleware.pagination, async (req,res) 
 provinciaController.post("/", async (req, res) => { 
 
   try{
-    let provincia = new Provinces
+    let provincia = new Provinces()
     if (req.body.name == undefined || req.body.name == null || req.body.name.length<3 || isNaN(req.body.latitude) || isNaN(req.body.longitude)){
       throw new Error("Datos no validos")
     }
@@ -101,7 +101,7 @@ provinciaController.post("/", async (req, res) => {
 })
 provinciaController.put("/", async (req, res) => {
     try{
-      const provincia = new Provinces
+      const provincia = new Provinces()
 
       if (req.body.name == undefined || req.body.name == null || req.body.name.length<3 || isNaN(req.body.latitude) || isNaN(req.body.longitude)){
         throw new Error("Datos no validos")

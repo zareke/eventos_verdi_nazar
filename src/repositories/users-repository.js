@@ -26,14 +26,23 @@ export default class EventRepository {
         }
       }
 
-    async register(f,l,u,p){
+    async register(user){
       try{
         const sql = "INSERT INTO users (first_name, last_name, username, password) VALUES ($1, $2, $3, $4)"
-        const anduvo = await this.DBClient.query(sql,[f,l,u,p])
-        return "👍"
+        await this.DBClient.query(sql,[user.first_name,user.last_name,user.username,user.password])
       }
       catch (error){
         console.error("error al registrar usuario",error)
+      }
+    }
+    async usernameExists(username){
+      try{
+        const sql = "SELECT * from users where username=$1"
+        const existe = (await this.DBClient.query(sql,[username])).rowCount>0
+        return existe
+      }
+      catch(e){
+        console.error("error al verificar si usuario existe")
       }
     }
 

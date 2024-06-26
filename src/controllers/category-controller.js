@@ -42,7 +42,7 @@ categoryController.get("/:id",async (req,res) => {
 })
 
 categoryController.post("/",async (req,res) => {
-    let category = new event_category
+    let category = new event_category()
     category.name = req.body.name
     category.display_order = Number(req.body.display_order)
     
@@ -57,7 +57,6 @@ categoryController.post("/",async (req,res) => {
 
 })
 
-import event_category from './event_category'; // Assuming this is how you import your model
 
 categoryController.put("/", async (req, res) => {
   try {

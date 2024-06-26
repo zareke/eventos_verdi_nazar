@@ -6,14 +6,20 @@ const eventoService = new Eventos();
 const userService = new Users();
 import jwt from 'jsonwebtoken'
 import { secretkey } from "../../middleware.js";
+import User from "../models/users.js"
+
 
 
 
 
 //6
-userController.get("/login", async (req, res) => {
+userController.post("/login", async (req, res) => { //funca
   
-  const loggedin = await userService.Login(req.body.username, req.body.password); //devuelve  true o false si ando o no andó
+  if (!userService.isEmail(req.body.username)){
+    return res.status(400).json({success:false, reason:"El nombre de usuario no es un Email valido."})
+  }
+
+  const loggedIn = await userService.Login(req.body.username, req.body.password); //devuelve  true o false si ando o no andó
   
   
 
@@ -23,7 +29,7 @@ userController.get("/login", async (req, res) => {
   }
 
   const payload={
-    id : loggedin[0].user_exists
+    id : loggedIn[0].user_exists
   }
 
 
@@ -31,54 +37,47 @@ userController.get("/login", async (req, res) => {
 
   
 
-if (loggedin[0].user_exists != -1) {
-    return res.status(201).send({
-      //token: token,
+if (loggedIn[0].user_exists != -1) {
+    return res.status(200).send({
+      success:true,
       token:token
     });
-  } else {
-    return res.status(403).send({
+  } else{
+    return res.status(401).send({
+      success:false,
       reason: "Usuario o contraseña no validos",
     });
   }
 });
 
-userController.post("/register", (req, res) => { //anda 👌
+userController.post("/register", (req, res) => { 
   let error = false;
-  
-  let first_name =
-    typeof req.body.first_name == "string" && req.body.first_name!=null
-      ? req.body.first_name
-      : (error = true);
-  let last_name =
-    typeof req.body.last_name == "string" && req.body.last_name!= null ? req.body.last_name : (error = true);
+  let user = new User()
+
+  try{
+    if(req.body.first_name.length<3 || req.body.first_name === undefined || req.body.last_name.length<3 || req.body.last_name === undefined){
+      throw new error("Datos no validos")
+    }
+    user.first_name=req.body.first_name
+    user.last_name=req.body.last_name
+
+    if(!userService.isValidUsername(req.body.username)){
+      throw new error ("datos no validos")
+    }
+    user.username=req.body.username
+    if ((req.body.password.length<3 || req.body.password===undefined)) {
+      throw new error ("datos no validos")
+    }
+    user.password = req.body.password 
     
-  let username = req.body.username != null && userService.UsernameExists(req.body.username) //no existe username exists 
-    ? req.body.username
-    : (error = true); 
-
-
-  let password =
-    req.body.password!=null && req.body.password.toString().length > 7
-      ? req.body.password
-      : (error = "la contraseña es no valida"); 
-
-  
-  
-  if (error == false) {
-    
-    userService.Register(first_name,last_name,username,password)
-    return res.status(201).json("usuario a sido created");
-
-  } else if (error == "la contraseña es no valida") {
-    return res.status(400).send({
-      reason: "contraseña no valida",
-    });
-  } else {
-    return res.status(400).send({
-      reason: "datos no validos",
-    });
+    userService.Register(user)
+    return res.status(201).json("Registrado correctamente")
   }
+  catch (e){
+    return res.status (400).json("datos no validos")
+  }
+
+  
 });
 
 

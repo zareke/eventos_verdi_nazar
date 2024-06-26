@@ -1,3 +1,4 @@
+import validator from 'validator'
 import UsersRepository from '../repositories/users-repository.js'
 
 export default class  Users {
@@ -11,22 +12,21 @@ export default class  Users {
         return loggedin
     }
 
-    UsernameExists(username){
-       // const query = `select exists (select 1 from user where username = ${username})`
-      //  const exists = query.execute()
-      let correct = true //harcoding
-        return correct
+    async isValidUsername(username) {
+        const userRpeo= new UsersRepository()
+        if (!(validator.isEmail(username)) || userRpeo.usernameExists(username)) {
+          return false;
+        }
     }
-
-    Register(fn,ln,u,p){
-        //const query = `insert into user values (${fn},${ln},${u},${p})`
+    async isEmail(username){
+        return validator.isEmail(username)
+    }
+    async Register(user){
         const userRepo = new UsersRepository()
-        userRepo.register(fn,ln,u,p)
-        
-        return "👍"
+        userRepo.register(user)
     }
 
-    ObtenerUserByEventId(first_name,last_name,username,attended,rating,pageSize,page, eventFromId){
+    async ObtenerUserByEventId(first_name,last_name,username,attended,rating,pageSize,page, eventFromId){
         let datoshardcodeados = [
             {
                 "first_name":first_name,
