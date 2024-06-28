@@ -17,7 +17,7 @@ var evento = {
 const eventoService = new Eventos();
 const middleware = new Middleware();
 
-eventoController.get("/", middleware.pagination, async (req, res) => {
+eventoController.get("/", middleware.pagination, async (req, res) => { //funcion funciona(funcion) {return true}
   
   var allEvents;
   let error = false;
@@ -69,7 +69,7 @@ eventoController.get("/", middleware.pagination, async (req, res) => {
   }
 });
 
-eventoController.get("/:id", async (req, res) => {
+eventoController.get("/:id", async (req, res) => { //error: no retorna los mismos valores que la consigna - no retorna 404 en caso de que el id no exista - corregir
   if (Number.isInteger(Number(req.params.id))) {
     const id = req.params.id;
     const evento = await eventoService.getEventoById(id);
@@ -105,7 +105,7 @@ function ValidarNumerosEstricto(numeros) {
   return fueError;
 }
 
-eventoController.post("/", middleware.userMiddleware, async (req, res) => {
+eventoController.post("/", middleware.userMiddleware, async (req, res) => { //no funciona mucho
   try{
     let evento = new Events()
 
@@ -113,21 +113,21 @@ eventoController.post("/", middleware.userMiddleware, async (req, res) => {
     evento.description=req.body.description
     
     if (evento.name.length < 3 || evento.description.length < 3)
-      throw new Error ("datos no validos")
+      throw new Error ("Nombre o descripcion no validos")
     
     
     evento.max_assistance=req.body.max_assistance
     evento.id_event_location=req.body.id_event_location
     
     if (eventoService.getMaxCapacity(evento.id_event_location) < max_assistance)
-      throw new Error ("datos no validos")
+      throw new Error ("Capacidad maxima de personas exedida")
     
     
     evento.price = req.body.price
     evento.duration_in_minutes=req.body.duration_in_minutes
     
     if (evento.price<=0 || evento.duration_in_minutes<=0)
-      throw new Error("Datos no validos")
+      throw new Error("Precio o duracion no validos")
   
     evento.enabled_for_enrollment=req.body.enabled_for_enrollment
     evento.id_creator_user=req.id
@@ -135,6 +135,7 @@ eventoController.post("/", middleware.userMiddleware, async (req, res) => {
     evento.start_date = req.body.startDate
     
     await eventoService.PostEvent(evento)
+    
     return res.status(201).json("Evento creado")
   }
   catch(error){

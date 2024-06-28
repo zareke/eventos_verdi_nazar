@@ -50,7 +50,7 @@ if (loggedIn[0].user_exists != -1) {
   }
 });
 
-userController.post("/register", (req, res) => { 
+userController.post("/register", (req, res) => {  //funciona
   let error = false;
   let user = new User()
 
