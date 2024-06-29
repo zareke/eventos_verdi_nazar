@@ -1,8 +1,8 @@
 import Express from "express";
 const provinciaController = Express.Router();
 import Users from "../service/user-service.js";
-import Eventos from "../service/evento-service.js" // que importe el service de user
-import Provincias from "../service/provincia-service.js" // que importe el service de provincias
+import Eventos from "../service/evento-service.js" 
+import Provincias from "../service/provincia-service.js" 
 import Provinces from "../models/provinces.js"
 const userService = new Users();
 const eventoService = new Eventos()
@@ -28,7 +28,7 @@ provinciaController.get("/", middleware.pagination,async (req, res) => { //anda 
   }
 
   const response = {
-    collection:provinces.rows, //
+    collection:provinces.rows, 
     pagination:res.locals.pagination
 }
 

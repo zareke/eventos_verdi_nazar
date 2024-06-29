@@ -18,7 +18,7 @@ export default class Middleware{
     next()
   }
 
-  async pagination(req,res,next){ //notar que empezamos desde la pagina 1 y no la pagina 0
+  async pagination(req,res,next){ // empezamos desde la pagina 1 y no la pagina 0
 
     if (req.query.limit===undefined || req.query.page ===undefined || req.query.page<=0){
       return res.status(400).json("Verifique que haya ingresado limit y page correctamente")
@@ -29,8 +29,8 @@ export default class Middleware{
 
     
 
-    //nota mental: odio javascript un poquito
-    const nPage = Number(Number(req.query.page)+Number(1))
+    
+    const nPage = Number(Number(req.query.page)+Number(1)) //javascript
     const reqpath = req.path === "/" ? "" : req.path
     let nextPage="http://"+req.get('host') +  req.baseUrl+reqpath+ "/?limit="+req.limit+"&page="+nPage
 

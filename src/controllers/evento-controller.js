@@ -6,67 +6,63 @@ import Middleware from "../../middleware.js";
 import EventRepository from "../repositories/events-repository.js";
 import Events from "../models/events.js";
 
-var evento = {
-  //filtros
-  nombre: "",
-  categoria: "",
-  fechaDeInicio: "",
-  tag: "",
-};
 
 const eventoService = new Eventos();
 const middleware = new Middleware();
 
-eventoController.get("/", middleware.pagination, async (req, res) => { //no probe los filtros + deberia retornar objetos en lugar de ids //arreglar
+eventoController.get("/", middleware.pagination, async (req, res) => { //get all eventos filtrado no funciona y deberia devolver TODOS los datos del evento de otras tablas tambien
   
   var allEvents;
-  let error = false;
+  const pageSize = req.limit
+  const offset = req.offset
+  let total
+  
+  var filtros = {
+    
+    nombre: "",
+    categoria: "",
+    fechaDeInicio: "",
+    tag: ""
+  };
 
-  Object.values(evento).forEach((i) => (i = ""));
+  filtros.nombre = req.query.name;
+  filtros.categoria = req.query.category;
+  filtros.tag = req.query.tag;
 
-  evento.nombre = req.query.name;
-
-  evento.categoria = req.query.category;
-  evento.tag = req.query.tag;
 
   if (req.query.startDate != undefined) {
-    evento.fechaDeInicio = !isNaN(Date.parse(req.query.startDate))
-      ? req.query.startDate
-      : (error = true);
-  } else evento.fechaDeInicio = req.query.startDate;
-
-  if (Object.values(evento).some((i) => i != null)) {
-    if (error) {
-      return res.json("Datos no validos");
+    if (!isNaN(Date.parse(req.query.startDate))){
+      filtros.fechaDeInicio=req.query.startDate
     }
-    allEvents = await eventoService.getAllEventosFiltrado(
-      pageSize,
-      page,
-      evento
-    );
-    return res.json(allEvents);
+
+    else return res.status(400).json("Fecha invalida")
+    
+  } filtros.fechaDeInicio=null
+
+  if (Object.values(filtros).some((i) => i != null)) {
+    
+    [allEvents,total] = await eventoService.getAllEventosFiltrado(pageSize,offset,filtros);
   } 
   else {
-    const pageSize = req.limit
-    const page = req.offset
-    let total
-    [allEvents, total] = await eventoService.getAllEventos(pageSize, page);
+    [allEvents, total] = await eventoService.getAllEventos(pageSize, offset);
 
-    res.locals.pagination.total=total
-
-
-    if(Number(res.locals.pagination.page)*Number(res.locals.pagination.limit)>=total){
-      res.locals.pagination.nextPage=null 
-    }
-
-
-    const response = {
-      collection:allEvents.rows,
-      pagination:res.locals.pagination
+    
+    
   }
+  
+  
 
-    return res.status(200).json(response);
+res.locals.pagination.total=total
+if(Number(res.locals.pagination.page)*Number(res.locals.pagination.limit)>=total){
+  res.locals.pagination.nextPage=null 
+}
+  
+  const response = {
+    collection:allEvents.rows,
+    pagination:res.locals.pagination
   }
+  return res.status(200).json(response);
+
 });
 
 eventoController.get("/:id", async (req, res) => { //panda🐼

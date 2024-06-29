@@ -1,7 +1,7 @@
 import Express, { response } from "express";
 const userController = Express.Router();
 import Users from "../service/user-service.js";
-import Eventos from "../service/evento-service.js" // que importe el service de user
+import Eventos from "../service/evento-service.js" 
 const eventoService = new Eventos();
 const userService = new Users();
 import jwt from 'jsonwebtoken'
@@ -12,7 +12,6 @@ import User from "../models/users.js"
 
 
 
-//6
 userController.post("/login", async (req, res) => { //funca
   
   if (!userService.isEmail(req.body.username)){

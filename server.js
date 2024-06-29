@@ -7,8 +7,8 @@ import categoryController from "./src/controllers/category-controller.js";
 import eventLocationController from "./src/controllers/event_location-controller.js";
 
 
-const app = express(); // Init API REST
-app.use(express.json()); // Middleware to parse JSON
+const app = express(); 
+app.use(express.json())
 const port = 4587;
 
 app.use("/event", eventoController);

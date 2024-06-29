@@ -6,12 +6,12 @@ import EventsRepository from "../repositories/events-repository.js"
 import sql from 'mssql'
 
 export default class Eventos {
-  getAllEventos = async (pageSize, requestedPage) => {
+  getAllEventos = async (pageSize, offset) => {
     
   
     
     const eventrepo = new EventsRepository();
-    let [returnEntity,total]= await eventrepo.getAllEvents(pageSize,requestedPage)
+    let [returnEntity,total]= await eventrepo.getAllEvents(pageSize,offset)
     
     
     return [returnEntity,total]
@@ -19,27 +19,16 @@ export default class Eventos {
 
   
 
-  AñadirAQuery(nombre, propiedad) {
-    return `${nombre} = ${propiedad} and`;
-  }
 
-  async getAllEventosFiltrado(pageSize, requestedPage, evento) { // cualquiera esto mas raro
+  async getAllEventosFiltrado(pageSize, offset, filtros) { 
     
     
-    let returnEntity = null
+
     const eventrepo = new EventsRepository()
-    returnEntity = await eventrepo.getAllEventsFiltrado(pageSize,requestedPage,evento)
+    let [returnEntity,total] = await eventrepo.getAllEventosFiltrado(pageSize,offset,filtros)
 
 
-      return {
-        collection: returnEntity, //GOTO 8
-        pagination: {
-          limit: pageSize,
-          offset: requestedPage,
-          nextPage: "http://localhost:3000/event?limit=15&offset=1",
-          total: 100000,
-        }
-    }
+    return [returnEntity,total]
   }
 
   async getEventoById(id) {
@@ -108,7 +97,7 @@ export default class Eventos {
     return returnEntity
   }
   async EliminarEvento(id){
-    let returnEntity = null//NOTA PARA ZAREK: PRIMERO LLAMAR A SETUPDELETECASCADE
+    let returnEntity = null
     const eventrepo = new EventsRepository()
     if (!(await eventrepo.anyEnrolled(id)))
     {    
