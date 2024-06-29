@@ -6,7 +6,7 @@ import Middleware from '../../middleware.js'
 import event_category from "../models/event_categories.js";
 const middleware=new Middleware
 
-categoryController.get("/",middleware.pagination,async (req,res) => { 
+categoryController.get("/",middleware.pagination,async (req,res) => { //como no va a funcionar :v
     
     const pageSize = req.limit
     const page = req.offset
@@ -28,7 +28,7 @@ categoryController.get("/",middleware.pagination,async (req,res) => {
 })
 
 
-categoryController.get("/:id",async (req,res) => {
+categoryController.get("/:id",async (req,res) => { //y mas vale que anda
 
     const catId = req.params.id
     let category  = await categoryService.getCategoryById(catId)
@@ -41,7 +41,7 @@ categoryController.get("/:id",async (req,res) => {
     }
 })
 
-categoryController.post("/",async (req,res) => {
+categoryController.post("/",async (req,res) => { //pues claro que funciona
     let category = new event_category()
     category.name = req.body.name
     category.display_order = Number(req.body.display_order)
@@ -58,7 +58,7 @@ categoryController.post("/",async (req,res) => {
 })
 
 
-categoryController.put("/", async (req, res) => {
+categoryController.put("/", async (req, res) => { //perfect
   try {
     const updatedCategory = new event_category();
 
@@ -86,7 +86,7 @@ categoryController.put("/", async (req, res) => {
 });
 
 
-categoryController.delete("/:id",async (req,res) => {
+categoryController.delete("/:id",async (req,res) => { //anda
     const id=req.params.id
 
     let result = await categoryService.deleteCategory(id)

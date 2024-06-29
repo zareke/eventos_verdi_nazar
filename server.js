@@ -15,7 +15,7 @@ app.use("/event", eventoController);
 app.use("/user",userController)
 app.use("/province",provinciaController)
 app.use("/location",locationController) 
-app.use("/category",categoryController)
+app.use("/event-category",categoryController)
 app.use("/event-location",eventLocationController)
 
 app.listen(port, () => {

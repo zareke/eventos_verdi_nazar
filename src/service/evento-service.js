@@ -17,28 +17,13 @@ export default class Eventos {
     return [returnEntity,total]
   }
 
-  getDetalleEventos() {
-    //quiza me equivoco pero zarek piensa que aca puede no funcionar el alias       sas
-    var query = `select events.*,l.*,p.* from events limit ${pageSize}
-        inner join event_locations l on events.start_date = l.name
-        inner join locations on l.full_address = locations.name
-        inner join provinces p on locations.name = p.full_name`;
-    return {
-      collection: query, //es posible que aca vaya eventsInDB
-      pagination: {
-        limit: pageSize,
-        offset: requestedPage,
-        nextPage: "http://localhost:3000/event?limit=15&offset=1",
-        total: query2,
-      },
-    };
-  }
+  
 
   AñadirAQuery(nombre, propiedad) {
     return `${nombre} = ${propiedad} and`;
   }
 
-  async getAllEventosFiltrado(pageSize, requestedPage, evento) {
+  async getAllEventosFiltrado(pageSize, requestedPage, evento) { // cualquiera esto mas raro
     
     
     let returnEntity = null
@@ -115,11 +100,11 @@ export default class Eventos {
     returnEntity = await eventrepo.postEvent(event)
     return returnEntity
   }
-  async PatchEvent(id,object)
+  async PatchEvent(event)
   {
     let returnEntity = null
     const eventrepo = new EventsRepository()
-    returnEntity = await eventrepo.patchEvent(id,object)
+    returnEntity = await eventrepo.patchEvent(event)
     return returnEntity
   }
   async EliminarEvento(id){

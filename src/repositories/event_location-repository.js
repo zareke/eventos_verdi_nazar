@@ -12,7 +12,7 @@ export default class EventLocationRepository {
 
   async getAllEventLocations(limit,offset,creatorId) {
     try{
-        const sql = 'SELECT * FROM event_locations offset $2 limit $1 WHERE id_creator_user=$3'
+        const sql = 'SELECT * FROM event_locations WHERE id_creator_user=$3 offset $2 limit $1'
         const evloc = await this.DBClient.query(sql,[limit, offset,creatorId])
 
         const sql2 = 'SELECT * FROM event_locations'
@@ -41,6 +41,7 @@ async eventLocationExists(id){
     try{
         const sql = 'SELECT * FROm event_locations WHERE id=$1'
         const evloc = await this.DBClient.query(sql,[id])
+        
         return evloc
     }
     catch (e){
@@ -68,7 +69,7 @@ async crearEventLocation(evl){
 }
 
 
-async deleteEventLocation(id,idUser){
+async   deleteEventLocation(id,idUser){
     try{
         const sql = 'delete from event_locations where id=$1 and id_creator_user = $2'
         const result = await this.DBClient.query(sql,[id,idUser])
@@ -82,7 +83,7 @@ async isCreatorUser(idUser,idEventLocation){
     try{
         const sql ="SELECT * from event_locations WHERE id=$1 and id_creator_user=$2"
         const result = await this.DBClient.query(sql,[idEventLocation,idUser])
-        return !(result.rowCount<=0)
+        return !result.rowCount<1
     }
     catch (e){
         console.error("error al verificar si es usuario creador: ",e)

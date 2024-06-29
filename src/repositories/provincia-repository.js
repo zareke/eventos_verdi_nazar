@@ -73,13 +73,13 @@ export default class ProvinciaRepository {
   }
   async DeleteProvincia(id){
     try{
-        const sql = 'DELETE FROM provinces WHERE id=$1'
+        const sql = 'DELETE FROM provinces WHERE id=$1 '
         const res = await this.DBClient.query(sql,[id])
 
         return res
     }
     catch (e){
-        console.error ("error al borrar provincia")
+        console.error ("error al borrar provincia",e)
     }
   }
 

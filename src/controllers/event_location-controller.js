@@ -8,7 +8,7 @@ const eventLocationService = new EventLocation()
 
 
 
-eventLocationController.get("/",middleware.pagination,middleware.userMiddleware,  async (req,res) =>{
+eventLocationController.get("/",middleware.pagination,middleware.userMiddleware,  async (req,res) =>{ //anda
     const pageSize = req.limit
     const page = req.offset
 
@@ -28,44 +28,49 @@ eventLocationController.get("/",middleware.pagination,middleware.userMiddleware,
     return res.status(200).json(response)
 })
 
-eventLocationController.get("/:id",middleware.userMiddleware,async (req,res)=>{
+eventLocationController.get("/:id",middleware.userMiddleware,async (req,res)=>{ //funca 
     let idEventLocation = req.params.id
     let idUser=req.id
 
     let eventlocation=await eventLocationService.getEventLocationById(idUser,idEventLocation)
     if (eventlocation.rowCount<1){
-        return res.status(404).json("Event location no encontrada")
+        return res.status(404).json("Event location no encontrada o no correspondiente al usuario")
     }
     else{
         return res.status(200).json(eventlocation.rows)
     }
 })
 
-eventLocationController.post("/",middleware.userMiddleware,async (req,res) =>{ 
+eventLocationController.post("/",middleware.userMiddleware,async (req,res) =>{ //funciona
    
 
    try{
-       const eventlocation = new Event_location()
     
-    eventlocation.id_location = Number(req.body.id_location)
+    const eventLocation = new Event_location()
 
-    if(!(await eventLocationService.locationExists(id_location)))
+    eventLocation.id_location = Number(req.body.id_location)
+
+    if(!(await eventLocationService.locationExists(eventLocation.id_location)))
         throw new error ("Datos no validos")
 
-    eventlocation.name = req.body.name
-    eventlocation.full_address = req.body.full_address
-    if (eventlocation.name.length<3 || eventlocation.full_address.length<3)
+
+    eventLocation.name = req.body.name
+    eventLocation.full_address = req.body.full_address
+
+    if (eventLocation.name.length<3 || eventLocation.full_address.length<3)
         throw new error ("Datos no validos")
 
-    eventlocation.max_capacity = Number(req.body.max_capacity)
-    if(eventlocation.max_capacity <=0)
+    eventLocation.max_capacity = Number(req.body.max_capacity)
+
+    if(eventLocation.max_capacity <=0)
         throw new error("Datos no validos")
-    eventlocation.latitude = Number(req.body.latitude)
-    eventlocation.longitude = Number(req.body.longitude)
-    eventlocation.id_creator_user=req.id
+
+    eventLocation.latitude = Number(req.body.latitude)
+    eventLocation.longitude = Number(req.body.longitude)
+    eventLocation.id_creator_user=req.id
     
-        await eventLocationService.newEventLocation(eventlocation)
-        return res.status(201).json("Event location creado")
+    await eventLocationService.newEventLocation(eventLocation)
+    return res.status(201).json("Event location creado")
    }
     catch (error){
         return res.status(400).json("Datos no validos")
@@ -74,11 +79,11 @@ eventLocationController.post("/",middleware.userMiddleware,async (req,res) =>{
 
 
 })
-eventLocationController.delete("/:id",middleware.userMiddleware,async (req, res) => {
+eventLocationController.delete("/:id",middleware.userMiddleware,async (req, res) => { //anda
     const idEvLoc = req.params.id
     const idUser = req.id
 
-    let result = await eventLocationService.deleteEventLocation(idEvLoc,idUser)
+    let result = await eventLocationService.deleteEventLocation(idEvLoc,idUser) //estaria bueno que borre todos los eventos en esa ubicacion tipo cascade
     if(result.rowCount<1){
         return res.status(404).json("Event location no encontrado")
     }
@@ -86,29 +91,36 @@ eventLocationController.delete("/:id",middleware.userMiddleware,async (req, res)
         return res.status(200).json("Event location eliminado correctamente")
     }
 })
-eventLocationController.put("/",middleware.userMiddleware,async (req,res) =>{
+
+eventLocationController.put("/",middleware.userMiddleware,async (req,res) =>{ //andoski
 
     try{
-    const eventlocation = new Event_location()
-        eventlocation.id=req.body.id_event_location
+        let eventlocation = new Event_location()
+        
+        eventlocation.id=req.body.id
         eventlocation.id_location=req.body.id_location
         eventlocation.name=req.body.name
-        eventlocation.full_address=req.body.address
-        eventlocation.max_capacity=req.body.maxCapacity
+        eventlocation.full_address=req.body.full_address
+        eventlocation.max_capacity=req.body.max_capacity
         eventlocation.latitude=req.body.latitude
         eventlocation.longitude=req.body.longitude
-        eventlocation.id_creator_user=req.body.idCreatorUser
+        eventlocation.id_creator_user=req.id
         
-        
-        if (!(await eventLocationService.locationExists(id_location)))
-            throw new Error("Datos no validos")
-        if ( eventlocation.name.length<3 || eventlocation.address.length<3)
-            throw new Error ("Datos no validos")
-        if(maxCapacity <=0)
-            throw new Error("Datos no validos")
 
-        if(!(eventLocationService.eventLocationExists(id_event_location)) || !(eventLocationService.isCreatorUser(idCreatorUser,id_event_location))){
-            return res.status(404).json("Localidad no encontrada. Verifique que es el usuario creador y haya iniciado correctamente el ID de la localidad")
+        if (!(await eventLocationService.locationExists(eventlocation.id_location))){            
+            throw new Error("Datos no validos")
+        }
+        if ( eventlocation.name.length<3 || eventlocation.full_address.length<3){
+            throw new Error ("Datos no validos")
+        }
+        
+        if(eventlocation.maxCapacity <=0)
+            throw new Error("Datos no validos")
+        
+        
+
+        if(!(await eventLocationService.eventLocationExists(eventlocation.id)) || !(await eventLocationService.isCreatorUser(eventlocation.id_creator_user,eventlocation.id))){
+            return res.status(404).json("Ubicacion no encontrada. Verifique que es el usuario creador y haya iniciado correctamente el ID de la localidad")
         }
         else{
             

@@ -19,12 +19,12 @@ userController.post("/login", async (req, res) => { //funca
     return res.status(400).json({success:false, reason:"El nombre de usuario no es un Email valido."})
   }
 
-  const loggedIn = await userService.Login(req.body.username, req.body.password); //devuelve  true o false si ando o no andó
+  const loggedIn = await userService.Login(req.body.username, req.body.password);
   
   
 
   const options = {
-    expiresIn:'1h',
+    expiresIn:'2d',
     issuer:'hangover'
   }
 

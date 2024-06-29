@@ -3,7 +3,6 @@ export const secretkey = "ariaverdienspotify"
 export default class Middleware{
 
  async userMiddleware (req, res, next) {
-  
     
     let payloadOriginal= null
     try{

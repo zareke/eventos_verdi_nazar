@@ -14,7 +14,7 @@ const middleware=new Middleware
 
 
 
-provinciaController.get("/", middleware.pagination,async (req, res) => { //copiar esta pagination en todos lso paginateds
+provinciaController.get("/", middleware.pagination,async (req, res) => { //anda por su puesto
   const pageSize = req.limit
   const offset = req.offset
 
@@ -28,7 +28,7 @@ provinciaController.get("/", middleware.pagination,async (req, res) => { //copia
   }
 
   const response = {
-    collection:provinces.rows, //all pagination should decir collection en ves de categories
+    collection:provinces.rows, //
     pagination:res.locals.pagination
 }
 
@@ -36,12 +36,15 @@ provinciaController.get("/", middleware.pagination,async (req, res) => { //copia
 
 
 })
-provinciaController.get("/:id", async (req, res) => {
+
+
+provinciaController.get("/:id", async (req, res) => { //san martin de los anda
   
   let id = Number(req.params.id)
 
 
   let provincia = await provinciaService.getProvinciaById(id)
+
 
   if ( provincia.rowCount<1){
     return res.status(404).json("La provincia no existe")
@@ -52,7 +55,7 @@ provinciaController.get("/:id", async (req, res) => {
 
 })
 
-provinciaController.get("/:id/locations",middleware.pagination, async (req,res) =>{
+provinciaController.get("/:id/locations",middleware.pagination, async (req,res) =>{ //anda te de vacaciones
 
   const pageSize = req.limit
   const page = req.offset
@@ -79,7 +82,7 @@ provinciaController.get("/:id/locations",middleware.pagination, async (req,res) 
 })
 
 
-provinciaController.post("/", async (req, res) => { 
+provinciaController.post("/", async (req, res) => {  //punpiona
 
   try{
     let provincia = new Provinces()
@@ -99,7 +102,8 @@ provinciaController.post("/", async (req, res) => {
   }
 
 })
-provinciaController.put("/", async (req, res) => {
+
+provinciaController.put("/", async (req, res) => { //che dire straits, esto funciona? dire straits: we are the sultans of si
     try{
       const provincia = new Provinces()
 
@@ -120,15 +124,17 @@ provinciaController.put("/", async (req, res) => {
 
     }
     catch (e){
-      return res.status(400).json(e)
+      return res.status(400).json("datos no validos")
     }
 })
+
+
 provinciaController.delete("/:id", async (req, res) => {
 
 
   let id=req.params.id
 
-  let result = await provinciaService.DeleteProvincia(id)
+  let result = await provinciaService.DeleteProvincia(id) //no anda, deberia borrar en cascada toooodo lo qeu tiene q ver con una provincia y por ende multiples localidades y por ende multiples eventos y por ende toda la informaicon de eventos
     if (result.rowCount<1 || Number.isNaN(id)){
         return res.status(404).json("Provincia no encontrada")
     }

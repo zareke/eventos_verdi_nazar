@@ -7,7 +7,7 @@ export default class EventLocation{
 
     async getAllEventLocations(pageSize,page,creatorId){
         let evlocrepo=new EventLocationRepository()
-        let [returnEntity,total]=await evlocrepo.getAllEventLocations(pageSize,page)
+        let [returnEntity,total]=await evlocrepo.getAllEventLocations(pageSize,page,creatorId)
         return [returnEntity,total]
     }
 

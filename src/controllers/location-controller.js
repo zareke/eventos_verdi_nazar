@@ -37,7 +37,7 @@ locationController.get("/:id", async (req, res) =>{ //anda
         return res.status(200).json(location.rows)
     }
     else{
-        return res.status(404).json("no encontrado")
+        return res.status(404).json("Localidad no encontrada")
     }
 })
 
@@ -47,7 +47,7 @@ locationController.get("/:id/event-location", middleware.userMiddleware, async (
     const eventlocations= await locationService.getEventLocationById(req.params.id, idUser)
 
     if(eventlocations.rowCount < 1){
-        return res.status(404).json("La location no fue encontrada. Verifique que usted es el usuario creador")
+        return res.status(404).json("La ubicacion no fue encontrada. Verifique que usted es el usuario creador")
     }
     else{
         return res.status(200).json(eventlocations.rows)
