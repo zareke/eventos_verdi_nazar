@@ -160,7 +160,8 @@ eventoController.put("/:id", middleware.userMiddleware, async (req, res) => { //
 
 eventoController.delete("/:id", middleware.userMiddleware, async (req, res) => { //anda
   const evento=(await eventoService.getEventoById(req.params.id))[0]
-  if (evento !==undefined && evento.id_creator_user==req.id) {
+  console.log(evento)
+  if (evento !==undefined) {
     const borrado = await eventoService.EliminarEvento(req.params.id);
 
     if (borrado) {
@@ -169,6 +170,7 @@ eventoController.delete("/:id", middleware.userMiddleware, async (req, res) => {
       return res.status(400).json("Hay usuarios registrados en el evento");
     }
   } else {
+    
     return res.status(404).json("Ese evento no existe o no fue creado por el usuario identificado");
   }
 });

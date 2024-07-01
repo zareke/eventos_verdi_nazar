@@ -183,36 +183,29 @@ export default class EventRepository {
       console.error("error al checkear si esta alguien enrolled?");
     }
   }
-  async setupCascadeDelete() { //does this sirve para province?
+  async finishDeleteEventCascade(id){
     try {
-      const sql = `
-        ALTER TABLE event_details
-        ADD CONSTRAINT event_details_event_id_fkey
-        FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE;
-      `; //agrega el on delete caSCADE
-      await this.DBClient.query(sql);
-      console.log("restriccion se agrego exitosamente");
+      let values = [id];
+
+      const sql = "delete from event_tags where id_event=$1";
+      await this.DBClient.query(sql, values);
     } catch (error) {
-      if (error.code === "42710") {
-        // codigo de error unico: ya existe la constraint
-        console.log("restriccion ya existe");
-      } else {
-        console.error("Error agregando la restriccion: ", error);
-        throw error; // relanzar el error después de registrarlo
-      }
+      console.error("error al borrar evento: ", error);
     }
   }
   async deleteEvent(id) {
     try {
       let values = [id];
-
+      await this.finishDeleteEventCascade(id)
       const sql = "delete from events where id=$1";
       const deleted = await this.DBClient.query(sql, values);
+      
       return deleted;
     } catch (error) {
       console.error("error al borrar evento: ", error);
     }
   }
+ 
   async getMaxCapacity(idlocation) {
     try {
       const values = [idlocation];
