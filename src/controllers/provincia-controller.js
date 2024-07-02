@@ -130,19 +130,21 @@ provinciaController.put("/", async (req, res) => { //che dire straits, esto func
 
 
 provinciaController.delete("/:id", async (req, res) => {
+  let id = req.params.id;
 
+  if (isNaN(id)) {
+    return res.status(400).json("ID de provincia no válido");
+  }
 
-  let id=req.params.id
+  let result = await provinciaService.DeleteProvincia(id);
 
-  let result = await provinciaService.DeleteProvincia(id) //no anda, deberia borrar en cascada toooodo lo qeu tiene q ver con una provincia y por ende multiples localidades y por ende multiples eventos y por ende toda la informaicon de eventos
-    if (result.rowCount<1 || Number.isNaN(id)){
-        return res.status(404).json("Provincia no encontrada")
-    }
-    else{
-        return res.status(200).json("Provincia eliminada")
-    }
+  if (result.rowCount < 1) {
+    return res.status(404).json("Provincia no encontrada");
+  } else {
+    return res.status(200).json("Provincia eliminada exitosamente");
+  }
+});
 
-})
 
 
 export default provinciaController

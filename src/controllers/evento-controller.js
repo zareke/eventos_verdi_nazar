@@ -38,7 +38,6 @@ eventoController.get("/", middleware.pagination, async (req, res) => { //get all
     else return res.status(400).json("Fecha invalida")
     
   } filtros.fechaDeInicio=null
-
   if (Object.values(filtros).some((i) => i != null)) {
     
     [allEvents,total] = await eventoService.getAllEventosFiltrado(pageSize,offset,filtros);

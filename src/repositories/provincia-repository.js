@@ -71,16 +71,33 @@ export default class ProvinciaRepository {
         console.error("error al buscar localidades por provincia: ",e)
     }
   }
-  async DeleteProvincia(id){
-    try{
-        const sql = 'DELETE FROM provinces WHERE id=$1 '
-        const res = await this.DBClient.query(sql,[id])
-
-        return res
-    }
-    catch (e){
-        console.error ("error al borrar provincia",e)
+  async DeleteProvincia(id) {
+    try {
+      // Delete related entities (e.g., localidades)
+      await this.finishDeleteProvinciaCascade(id);
+  
+      // Delete the provincia itself
+      const sql = 'DELETE FROM provinces WHERE id=$1';
+      const res = await this.DBClient.query(sql, [id]);
+  
+      return res;
+    } catch (e) {
+      console.error("Error al borrar provincia:", e);
+      throw e; // Rethrow the error to handle it in the controller or service layer
     }
   }
+  async finishDeleteProvinciaCascade(id) {
+    try {
+      // Example of deleting related entities (modify as per your database schema)
+      const deleteLocalidadesSql = "DELETE FROM localidades WHERE id_provincia=$1";
+      await this.DBClient.query(deleteLocalidadesSql, [id]);
+  
+      // Add more cascading delete queries as needed for other related entities
+  
+    } catch (error) {
+      console.error("Error al borrar cascada de provincia:", error);
+      throw error; // Rethrow the error to handle it in the higher layers
+    }
+  } 
 
 }

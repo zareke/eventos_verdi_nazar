@@ -77,9 +77,6 @@ export default class EventRepository {
         
         const totalResult = await this.DBClient.query(sql2, countValues);
         const total = totalResult.rows[0].count;
-        console.log(eventos.rows[0].name)
-        console.log(eventFilters.nombre)
-        console.log(eventos)
         return [eventos.rows, total];
     } catch (error) {
         console.error("Error al filtrar los eventos: ", error);
@@ -234,7 +231,7 @@ export default class EventRepository {
       await this.DBClient.query(sql, values);
     } catch (error) {
       console.error("error al borrar evento: ", error);
-    }
+    } 
   }
   async deleteEvent(id) {
     try {
