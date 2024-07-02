@@ -20,31 +20,74 @@ export default class EventRepository {
       console.error("Error al obtener eventos:", error);
     }
   }
-
-  async getAllEventosFiltrado(size, offset, eventFilters) { // NO FUNCIOMNA
+  async getAllEventosFiltrado(size, offset, eventFilters) {
     try {
-      const values = [
-        offset,
-        size,
-        eventFilters.nombre,
-        eventFilters.categoria,
-        eventFilters.fechaDeInicio,
-        eventFilters.tag
-      ];
+        const values = [size, offset];
+        const countValues = [];
+        
+        let sql = `
+            SELECT ev.*, evca.*, tg.* 
+            FROM events ev 
+            INNER JOIN event_categories evca ON ev.id_event_category = evca.id 
+            INNER JOIN event_tags evtg ON id_event = ev.id 
+            INNER JOIN tags tg ON evtg.id_tag = tg.id 
+            WHERE 1=1`;
 
-      console.log(values)
-      const sql = "SELECT * FROM events ev INNER JOIN event_categories evca ON ev.id_event_category = evca.id INNER JOIN event_tags evtg ON id_event = ev.id INNER JOIN tags tg ON evtg.id_tag = tg.id WHERE (COALESCE($1, '') = '' OR ev.name = $1) AND (COALESCE($4, '') = '' OR tg.name = $4) AND (COALESCE($2, '') = '' OR evca.name = $2) AND (COALESCE($3, 0) = 0 OR evca.id = $3) LIMIT $1 OFFSET $2 ";
-      
-      const eventos = await this.DBClient.query(sql, values);
-      
-      const sql2 = "SELECT * FROM events ev INNER JOIN event_categories evca ON ev.id_event_category = evca.id INNER JOIN event_tags evtg ON id_event = ev.id INNER JOIN tags tg ON evtg.id_tag = tg.id WHERE (COALESCE($1, '') = '' OR ev.name = $1) AND (COALESCE($4, '{}') = '{}' OR tg.name = ANY($6::text[])) AND (COALESCE($4, '') = '' OR evca.name = $4) AND (COALESCE($5, 0) = 0 OR evca.id = $5)";
-      const total = (await this.DBClient.query(sql2,[eventFilters.nombre,eventFilters.categoria,eventFilters.fechaDeInicio,eventFilters.tag])).rowCount
+        let sql2 = `
+            SELECT COUNT(*) 
+            FROM events ev 
+            INNER JOIN event_categories evca ON ev.id_event_category = evca.id 
+            INNER JOIN event_tags evtg ON id_event = ev.id 
+            INNER JOIN tags tg ON evtg.id_tag = tg.id 
+            WHERE 1=1`;
 
-      return [eventos,total];
+        if (eventFilters.nombre) {
+            values.push(eventFilters.nombre);
+            countValues.push(eventFilters.nombre);
+            sql += ` AND ev.name = $${values.length}`;
+            sql2 += ` AND ev.name = $${countValues.length}`;
+        }
+
+        if (eventFilters.categoria) {
+            values.push(eventFilters.categoria);
+            countValues.push(eventFilters.categoria);
+            sql += ` AND evca.name = $${values.length}`;
+            sql2 += ` AND evca.name = $${countValues.length}`;
+        }
+
+        if (eventFilters.fechaDeInicio) {
+            values.push(eventFilters.fechaDeInicio);
+            countValues.push(eventFilters.fechaDeInicio);
+            sql += ` AND ev.fecha_de_inicio = $${values.length}`;
+            sql2 += ` AND ev.fecha_de_inicio = $${countValues.length}`;
+        }
+
+        if (eventFilters.tag) {
+            values.push(eventFilters.tag);
+            countValues.push(eventFilters.tag);
+            sql += ` AND tg.name = $${values.length}`;
+            sql2 += ` AND tg.name = $${countValues.length}`;
+        }
+
+        sql += ` LIMIT $1 OFFSET $2`;
+
+        
+        const eventos = await this.DBClient.query(sql, values);
+
+        
+        const totalResult = await this.DBClient.query(sql2, countValues);
+        const total = totalResult.rows[0].count;
+        console.log(eventos.rows[0].name)
+        console.log(eventFilters.nombre)
+        console.log(eventos)
+        return [eventos.rows, total];
     } catch (error) {
-      console.error("error al filtrar los eventos: ", error);
+        console.error("Error al filtrar los eventos: ", error);
     }
-  }
+}
+
+
+
 
   async getEventById(id) {
     try {

@@ -161,7 +161,7 @@ eventoController.put("/:id", middleware.userMiddleware, async (req, res) => { //
 eventoController.delete("/:id", middleware.userMiddleware, async (req, res) => { //anda
   const evento=(await eventoService.getEventoById(req.params.id))[0]
   console.log(evento)
-  if (evento !==undefined) {
+  if (evento !==undefined && req.id == evento.id_creator_user) {
     const borrado = await eventoService.EliminarEvento(req.params.id);
 
     if (borrado) {

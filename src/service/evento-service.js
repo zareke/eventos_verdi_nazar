@@ -25,6 +25,7 @@ export default class Eventos {
     
 
     const eventrepo = new EventsRepository()
+    
     let [returnEntity,total] = await eventrepo.getAllEventosFiltrado(pageSize,offset,filtros)
 
 
