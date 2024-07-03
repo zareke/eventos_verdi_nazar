@@ -26,7 +26,7 @@ export default class EventRepository {
         const countValues = [];
         
         let sql = `
-            SELECT ev.*, evca.*, tg.* 
+            SELECT ev.*, evca.name as category, tg.name as tag_name 
             FROM events ev 
             INNER JOIN event_categories evca ON ev.id_event_category = evca.id 
             INNER JOIN event_tags evtg ON id_event = ev.id 
@@ -47,8 +47,8 @@ export default class EventRepository {
             sql += ` AND ev.name = $${values.length}`;
             sql2 += ` AND ev.name = $${countValues.length}`;
         }
-
-        if (eventFilters.categoria) {
+        
+        if (eventFilters.categoria !==undefined) {
             values.push(eventFilters.categoria);
             countValues.push(eventFilters.categoria);
             sql += ` AND evca.name = $${values.length}`;
@@ -73,12 +73,10 @@ export default class EventRepository {
 
         
         const eventos = await this.DBClient.query(sql, values);
-
         
         const totalResult = await this.DBClient.query(sql2, countValues);
         const total = totalResult.rows[0].count;
-        console.log("eventosrows",eventos.rows,total)
-        return [eventos.rows, total];
+        return [eventos, total];
     } catch (error) {
         console.error("Error al filtrar los eventos: ", error);
     }
