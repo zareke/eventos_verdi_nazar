@@ -77,11 +77,12 @@ export default class EventRepository {
         
         const totalResult = await this.DBClient.query(sql2, countValues);
         const total = totalResult.rows[0].count;
+        console.log("eventosrows",eventos.rows,total)
         return [eventos.rows, total];
     } catch (error) {
         console.error("Error al filtrar los eventos: ", error);
     }
-}
+  }
 
 
 

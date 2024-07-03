@@ -88,16 +88,65 @@ export default class ProvinciaRepository {
   }
   async finishDeleteProvinciaCascade(id) {
     try {
-      // Example of deleting related entities (modify as per your database schema)
-      const deleteLocalidadesSql = "DELETE FROM localidades WHERE id_provincia=$1";
-      await this.DBClient.query(deleteLocalidadesSql, [id]);
+      // Start a transaction
+      await this.DBClient.query('BEGIN');
   
-      // Add more cascading delete queries as needed for other related entities
+      // Delete event_enrollments related to events in the province
+      const deleteEnrollmentsSql = `
+        DELETE FROM event_enrollments
+        WHERE id_event IN (
+          SELECT e.id
+          FROM events e
+          JOIN event_locations el ON e.id_event_location = el.id
+          JOIN locations l ON el.id_location = l.id
+          WHERE l.id_province = $1
+        )`;
+      await this.DBClient.query(deleteEnrollmentsSql, [id]);
+  
+      // Delete event_tags related to events in the province
+      const deleteEventTagsSql = `
+        DELETE FROM event_tags
+        WHERE id_event IN (
+          SELECT e.id
+          FROM events e
+          JOIN event_locations el ON e.id_event_location = el.id
+          JOIN locations l ON el.id_location = l.id
+          WHERE l.id_province = $1
+        )`;
+      await this.DBClient.query(deleteEventTagsSql, [id]);
+  
+      // Delete events related to locations in the province
+      const deleteEventsSql = `
+        DELETE FROM events
+        WHERE id_event_location IN (
+          SELECT el.id
+          FROM event_locations el
+          JOIN locations l ON el.id_location = l.id
+          WHERE l.id_province = $1
+        )`;
+      await this.DBClient.query(deleteEventsSql, [id]);
+  
+      // Delete event_locations related to locations in the province
+      const deleteEventLocationsSql = `
+        DELETE FROM event_locations
+        WHERE id_location IN (
+          SELECT id FROM locations WHERE id_province = $1
+        )`;
+      await this.DBClient.query(deleteEventLocationsSql, [id]);
+  
+      // Delete locations in the province
+      const deleteLocationsSql = "DELETE FROM locations WHERE id_province = $1";
+      await this.DBClient.query(deleteLocationsSql, [id]);
+  
+      // Commit the transaction
+      await this.DBClient.query('COMMIT');
   
     } catch (error) {
+      // If there's an error, roll back the transaction
+      await this.DBClient.query('ROLLBACK');
       console.error("Error al borrar cascada de provincia:", error);
       throw error; // Rethrow the error to handle it in the higher layers
     }
-  } 
+  }
 
 }
