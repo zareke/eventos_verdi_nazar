@@ -41,7 +41,7 @@ export default class EventRepository {
             INNER JOIN tags tg ON evtg.id_tag = tg.id 
             WHERE 1=1`;
 
-        if (eventFilters.nombre) {
+        if (eventFilters.nombre !== undefined) {
             values.push(eventFilters.nombre);
             countValues.push(eventFilters.nombre);
             sql += ` AND ev.name = $${values.length}`;
@@ -55,14 +55,14 @@ export default class EventRepository {
             sql2 += ` AND evca.name = $${countValues.length}`;
         }
 
-        if (eventFilters.fechaDeInicio) {
+        if (eventFilters.fechaDeInicio !== undefined && eventFilters.fechaDeInicio !== null) {
             values.push(eventFilters.fechaDeInicio);
             countValues.push(eventFilters.fechaDeInicio);
             sql += ` AND ev.fecha_de_inicio = $${values.length}`;
             sql2 += ` AND ev.fecha_de_inicio = $${countValues.length}`;
         }
 
-        if (eventFilters.tag) {
+        if (eventFilters.tag !== undefined) {
             values.push(eventFilters.tag);
             countValues.push(eventFilters.tag);
             sql += ` AND tg.name = $${values.length}`;
