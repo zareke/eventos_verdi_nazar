@@ -1,0 +1,838 @@
+{
+	"info": {
+		"_postman_id": "7d66208e-bdfa-4c76-9077-a57cf30d5504",
+		"name": "DAI - Eventos API - Nazar_Verdi",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "35403321"
+	},
+	"item": [
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"first_name\":\"dante\",\r\n    \"last_name\":\"verdi\",\r\n    \"username\":\"danosqui20@gmail.com\",\r\n    \"password\":\"danteMundoGaturro2006\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4587/user/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4587",
+							"path": [
+								"user",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"danosqui20@gmail.com\",\r\n    \"password\":\"danteMundoGaturro2006\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4587/user/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4587",
+							"path": [
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "evento",
+			"item": [
+				{
+					"name": "event enrollment",
+					"item": [
+						{
+							"name": "Post new Enrollment",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"description\":\"muy bueno la verdad es un show super cool epico y estoy looking forward to it\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:4587/event/1/enrollment",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "4587",
+									"path": [
+										"event",
+										"1",
+										"enrollment"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete enrollment",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:4587/event/1/enrollment",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "4587",
+									"path": [
+										"event",
+										"1",
+										"enrollment"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add evento rating",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"observations\":\"no me gusta taylor swift!!\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:4587/event/2/enrollment/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "4587",
+									"path": [
+										"event",
+										"2",
+										"enrollment",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get All Eventos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4587/event/?limit=2&page=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4587",
+							"path": [
+								"event",
+								""
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "2"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Eventos (filtrado)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4587/event/?limit=2&page=1&name=taylor",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4587",
+							"path": [
+								"event",
+								""
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "2"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "name",
+									"value": "taylor"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Evento by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4587/event/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4587",
+							"path": [
+								"event",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post Evento",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"Ruben rada 80 años\",\r\n    \"description\":\"el cumpleaños de ruben rada 80 años\",\r\n    \"max_assistance\":2000,\r\n    \"id_event_location\":1,\r\n    \"price\":200,\r\n    \"duration_in_minutes\":60,\r\n    \"enabled_for_enrollment\":true,\r\n    \"id_event_category\":1,\r\n    \"start_date\":\"2024-07-29 00:00:00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4587/event/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4587",
+							"path": [
+								"event",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch evento",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"Ruben rada 80 años\",\r\n    \"description\":\"el cumpleaños de ruben rada 80 años\",\r\n    \"max_assistance\":2000,\r\n    \"id_event_location\":1,\r\n    \"price\":200,\r\n    \"duration_in_minutes\":60,\r\n    \"enabled_for_enrollment\":true,\r\n    \"id_event_category\":1,\r\n    \"start_date\":\"2024-07-29 00:00:00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4587/event/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4587",
+							"path": [
+								"event",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar evento",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4587/event/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4587",
+							"path": [
+								"event",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "category",
+			"item": [
+				{
+					"name": "Get All Categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4587/event-category?limit=2&page=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4587",
+							"path": [
+								"event-category"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "2"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get category by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4587/event-category/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4587",
+							"path": [
+								"event-category",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post categoria",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"fulbo\",\r\n    \"display_order\":20\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4587/event-category/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4587",
+							"path": [
+								"event-category",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Put categoria",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\":1,\r\n    \"name\":\"Musica y mas\",\r\n    \"display_order\":20\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4587/event-category/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4587",
+							"path": [
+								"event-category",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar categoria",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4587/event-category/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4587",
+							"path": [
+								"event-category",
+								"2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "event_location",
+			"item": [
+				{
+					"name": "Get All Event locations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4587/event-location?limit=2&page=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4587",
+							"path": [
+								"event-location"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "2"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get event location by id",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Post event location",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id_location\":23,\r\n    \"name\":\"Estadio Libertadores de América - Ricardo Enrique Bochini\",\r\n    \"full_address\": \"Bochini 751\",\r\n    \"max_capacity\" : 40000,\r\n    \"latitude\":-34.6701253612901, \r\n    \"longitude\":-58.371325759984245\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4587/event-location/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4587",
+							"path": [
+								"event-location",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar event location",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\":4,\r\n    \"id_location\":240,\r\n    \"name\":\"Estadio Presidente Perón\",\r\n    \"full_address\": \"Pasaje Mozart y Corbatta\",\r\n    \"max_capacity\" : 40000,\r\n    \"latitude\":-34.6701253612901, \r\n    \"longitude\":-58.371325759984245\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4587/event-location/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4587",
+							"path": [
+								"event-location",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete event location",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4587/event-location/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4587",
+							"path": [
+								"event-location",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "location",
+			"item": [
+				{
+					"name": "Get all locations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4587/location/?limit=50&page=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4587",
+							"path": [
+								"location",
+								""
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "50"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get location by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4587/location/7",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4587",
+							"path": [
+								"location",
+								"7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get event location by location",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4587/location/240/event-location",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4587",
+							"path": [
+								"location",
+								"240",
+								"event-location"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "provincia",
+			"item": [
+				{
+					"name": "Get All Provincias",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4587/province/?limit=7&page=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4587",
+							"path": [
+								"province",
+								""
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "7"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Locations in provincia",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4587/province/2/locations?limit=20&page=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4587",
+							"path": [
+								"province",
+								"2",
+								"locations"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "20"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get provincia by id",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Post provincia",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"Tierra del Huevo\",\r\n    \"full_name\":\"Tierra del huevo, Atlantis e islas Sanguchito\",\r\n    \"latitude\":20000,\r\n    \"longitude\":100000,\r\n    \"display_order\":null\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4587/province/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4587",
+							"path": [
+								"province",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Put provincia",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\":6,\r\n    \"name\":\"puenos paires\",\r\n    \"full_name\":\"Propincia de Puenos Paires\",\r\n    \"latitude\":1,\r\n    \"longitude\":2,\r\n    \"display_order\":null\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4587/province/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4587",
+							"path": [
+								"province",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete provincia",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4587/province/42/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4587",
+							"path": [
+								"province",
+								"42",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiaWF0IjoxNzE5NjE1MzQwLCJleHAiOjE3MTk3ODgxNDAsImlzcyI6ImhhbmdvdmVyIn0.CTL1LuNgVJpNN9mB_Onmhx3pFdTuIyElELrT0jMpJZo",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
