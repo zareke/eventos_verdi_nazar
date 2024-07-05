@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "7d66208e-bdfa-4c76-9077-a57cf30d5504",
+		"_postman_id": "abacf6de-4a52-4425-a8d8-70e58ea49d95",
 		"name": "DAI - Eventos API - Nazar_Verdi",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "35403321"
+		"_exporter_id": "34561705"
 	},
 	"item": [
 		{
@@ -152,6 +152,57 @@
 										"2",
 										"enrollment",
 										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get listado participantes",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:4587/event/2/enrollment?limit=10&page=1&first_name=ZAR&last_name=verdi&username=ZAR&attended=true&rating=10",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "4587",
+									"path": [
+										"event",
+										"2",
+										"enrollment"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "first_name",
+											"value": "ZAR"
+										},
+										{
+											"key": "last_name",
+											"value": "verdi"
+										},
+										{
+											"key": "username",
+											"value": "ZAR"
+										},
+										{
+											"key": "attended",
+											"value": "true"
+										},
+										{
+											"key": "rating",
+											"value": "10"
+										}
 									]
 								}
 							},
@@ -491,7 +542,10 @@
 					"name": "Get event location by id",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": ""
+						}
 					},
 					"response": []
 				},
@@ -719,7 +773,10 @@
 					"name": "Get provincia by id",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": ""
+						}
 					},
 					"response": []
 				},

@@ -12,7 +12,7 @@ import User from "../models/users.js"
 
 
 
-userController.post("/login", async (req, res) => { //funca
+userController.post("/login", async (req, res) => { 
   
   if (!userService.isEmail(req.body.username)){
     return res.status(400).json({success:false, reason:"El nombre de usuario no es un Email valido."})
@@ -49,7 +49,7 @@ if (loggedIn[0].user_exists != -1) {
   }
 });
 
-userController.post("/register", (req, res) => {  //funciona
+userController.post("/register", (req, res) => {  
   let error = false;
   let user = new User()
 

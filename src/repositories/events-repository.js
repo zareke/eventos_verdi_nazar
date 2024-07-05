@@ -53,37 +53,29 @@ export default class EventRepository {
         if (eventFilters.nombre) {
             values.push(`%${eventFilters.nombre}%`);
             countValues.push(`%${eventFilters.nombre}%`);
-            sql += ` AND ev.name LIKE $${values.length}`;
-            sql2 += ` AND ev.name LIKE $${countValues.length}`;
+            sql += ` AND ev.name ILIKE $${values.length}`;
+            sql2 += ` AND ev.name ILIKE $${countValues.length}`;
         }
         
         if (eventFilters.categoria) {
             values.push(`%${eventFilters.categoria}%`);
             countValues.push(`%${eventFilters.categoria}%`);
-            sql += ` AND evca.name LIKE $${values.length}`;
-            sql2 += ` AND evca.name LIKE $${countValues.length}`;
+            sql += ` AND evca.name ILIKE $${values.length}`;
+            sql2 += ` AND evca.name ILIKE $${countValues.length}`;
         }
 
         if (eventFilters.fechaDeInicio) {
-          // Convertimos la fecha de string a objeto Date
-          const fecha = new Date(eventFilters.fechaDeInicio);
-          
-          // Creamos dos fechas: una para el inicio del día y otra para el final
-          const fechaInicio = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
-          const fechaFin = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate() + 1);
-      
-          values.push(fechaInicio.toISOString(), fechaFin.toISOString());
-          countValues.push(fechaInicio.toISOString(), fechaFin.toISOString());
-          
-          sql += ` AND ev.start_date >= $${values.length - 1} AND ev.start_date < $${values.length}`;
-          sql2 += ` AND ev.start_date >= $${countValues.length - 1} AND ev.start_date < $${countValues.length}`;
+          values.push(eventFilters.fechaDeInicio);
+          countValues.push(eventFilters.fechaDeInicio);
+          sql += ` AND DATE(ev.start_date) = $${values.length}::date`;
+          sql2 += ` AND DATE(ev.start_date) = $${countValues.length}::date`;
       }
 
         if (eventFilters.tag) {
             values.push(`%${eventFilters.tag}%`);
             countValues.push(`%${eventFilters.tag}%`);
-            sql += ` AND tg.name LIKE $${values.length}`;
-            sql2 += ` AND tg.name LIKE $${countValues.length}`;
+            sql += ` AND tg.name ILIKE $${values.length}`;
+            sql2 += ` AND tg.name ILIKE $${countValues.length}`;
         }
 
         sql += ` ORDER BY ev.id LIMIT $1 OFFSET $2`;
@@ -177,7 +169,7 @@ WHERE ee.id_event = $1
   async getEventById(id) {
     try {
       const values = [id];
-      //query que hizo claudio que une todas las tablas
+      
       const sql = `SELECT 
         e.id, e.name, e.description, e.id_event_category, e.id_event_location, 
         e.start_date, e.duration_in_minutes, e.price, e.enabled_for_enrollment, 
@@ -207,12 +199,11 @@ WHERE ee.id_event = $1
                 )
             ),
             'creator_user', JSON_BUILD_OBJECT(
-                'id', u1.id,
-                'first_name', u1.first_name,
-                'last_name', u1.last_name,
-                'username', u1.username,
-                'password', '******'
-            )
+    'id', u1.id,
+    'first_name', u1.first_name,
+    'last_name', u1.last_name,
+    'username', u1.username
+) 
         ) AS event_location,
         (
             SELECT JSON_AGG(JSON_BUILD_OBJECT(
@@ -346,7 +337,7 @@ WHERE ee.id_event = $1
     }
   }
 
-  //las siguientes cuatro funciones fueron hechas por claudio
+  //las siguientes cuatro funciones fueron hechas por claude
   async maxAssistanceReached(idEvent) {
     const result = await this.DBClient.query(
       `

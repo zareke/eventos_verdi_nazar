@@ -8,7 +8,7 @@ const eventLocationService = new EventLocation()
 
 
 
-eventLocationController.get("/",middleware.pagination,middleware.userMiddleware,  async (req,res) =>{ //anda
+eventLocationController.get("/",middleware.pagination,middleware.userMiddleware,  async (req,res) =>{ 
     const pageSize = req.limit
     const page = req.offset
 
@@ -28,7 +28,7 @@ eventLocationController.get("/",middleware.pagination,middleware.userMiddleware,
     return res.status(200).json(response)
 })
 
-eventLocationController.get("/:id",middleware.userMiddleware,async (req,res)=>{ //funca 
+eventLocationController.get("/:id",middleware.userMiddleware,async (req,res)=>{  
     let idEventLocation = req.params.id
     let idUser=req.id
 
@@ -41,7 +41,7 @@ eventLocationController.get("/:id",middleware.userMiddleware,async (req,res)=>{ 
     }
 })
 
-eventLocationController.post("/",middleware.userMiddleware,async (req,res) =>{ //funciona
+eventLocationController.post("/",middleware.userMiddleware,async (req,res) =>{ 
    
 
    try{
@@ -79,11 +79,11 @@ eventLocationController.post("/",middleware.userMiddleware,async (req,res) =>{ /
 
 
 })
-eventLocationController.delete("/:id",middleware.userMiddleware,async (req, res) => { //anda
+eventLocationController.delete("/:id",middleware.userMiddleware,async (req, res) => { 
     const idEvLoc = req.params.id
     const idUser = req.id
 
-    let result = await eventLocationService.deleteEventLocation(idEvLoc,idUser) //estaria bueno que borre todos los eventos en esa ubicacion tipo cascade
+    let result = await eventLocationService.deleteEventLocation(idEvLoc,idUser) 
     if(result.rowCount<1){
         return res.status(404).json("Event location no encontrado")
     }
@@ -92,7 +92,7 @@ eventLocationController.delete("/:id",middleware.userMiddleware,async (req, res)
     }
 })
 
-eventLocationController.put("/",middleware.userMiddleware,async (req,res) =>{ //andoski
+eventLocationController.put("/",middleware.userMiddleware,async (req,res) =>{ 
 
     try{
         let eventlocation = new Event_location()

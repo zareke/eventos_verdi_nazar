@@ -7,7 +7,7 @@ const locationService = new Location();
 
     
 
-locationController.get("/", middleware.pagination, async (req,res) =>{ //anda
+locationController.get("/", middleware.pagination, async (req,res) =>{ 
     const pageSize = req.limit
     const page = req.offset
 
@@ -29,7 +29,7 @@ locationController.get("/", middleware.pagination, async (req,res) =>{ //anda
 
 })
 
-locationController.get("/:id", async (req, res) =>{ //anda
+locationController.get("/:id", async (req, res) =>{ 
     const id = req.params.id;
     const location = await locationService.getLocationById(id)
     
@@ -41,7 +41,7 @@ locationController.get("/:id", async (req, res) =>{ //anda
     }
 })
 
-locationController.get("/:id/event-location", middleware.userMiddleware, async (req,res) => { //anda
+locationController.get("/:id/event-location", middleware.userMiddleware, async (req,res) => { 
     const idUser=req.id
 
     const eventlocations= await locationService.getEventLocationById(req.params.id, idUser)

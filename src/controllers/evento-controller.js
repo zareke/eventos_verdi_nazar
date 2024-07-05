@@ -21,20 +21,19 @@ eventoController.get("/", middleware.pagination, async (req, res) => {
   filtros.nombre = req.query.name;
   filtros.categoria = req.query.category;
   filtros.tag = req.query.tag;
-  
-  if (req.query.startDate) {
-    try {
-        const fecha = new Date(req.query.startDate);
-        if (isNaN(fecha.getTime())) {
-            return res.status(400).json("Fecha inválida");
-        }
-        // Formatear la fecha a ISO string
-        filtros.fechaDeInicio = fecha.toISOString();
-    } catch (error) {
-        return res.status(400).json("Formato de fecha inválido");
-    }
+if (req.query.startDate) {
+  try {
+      const fecha = new Date(req.query.startDate);
+      if (isNaN(fecha.getTime())) {
+          return res.status(400).json("Fecha inválida");
+      }
+      filtros.fechaDeInicio = req.query.startDate;
+      console.log("Fecha recibida:", req.query.startDate);
+      console.log("Fecha procesada:", filtros.fechaDeInicio);
+  } catch (error) {
+      return res.status(400).json("Formato de fecha inválido");
+  }
 }
-
   const pageSize = req.limit;
   const offset = req.offset;
 
@@ -67,11 +66,11 @@ eventoController.get("/", middleware.pagination, async (req, res) => {
 });
 
 eventoController.get("/:id", async (req, res) => {
-  //panda🐼
+  
 
   const eventId = req.params.id;
   const event = await eventoService.getEventoById(eventId);
-  if (event.rowcountt < 1) {
+  if (Object.keys(event).length === 0) {
     return res.status(404).json("Evento no encontrado");
   } else {
     return res.status(200).json(event);
@@ -79,7 +78,6 @@ eventoController.get("/:id", async (req, res) => {
 });
 
 eventoController.post("/", middleware.userMiddleware, async (req, res) => {
-  //anda :)
   try {
     let evento = new Events();
 
@@ -118,7 +116,7 @@ eventoController.post("/", middleware.userMiddleware, async (req, res) => {
 });
 
 eventoController.put("/:id", middleware.userMiddleware, async (req, res) => {
-  //anda
+  
   try {
     let evento = new Events();
     evento.id = req.params.id;
@@ -160,7 +158,7 @@ eventoController.put("/:id", middleware.userMiddleware, async (req, res) => {
 });
 
 eventoController.delete("/:id", middleware.userMiddleware, async (req, res) => {
-  //anda
+  
   const evento = (await eventoService.getEventoById(req.params.id))[0];
   if (evento !== undefined && req.id == evento.id_creator_user) {
     const borrado = await eventoService.EliminarEvento(req.params.id);
@@ -209,7 +207,6 @@ eventoController.post(
   "/:id/enrollment",
   middleware.userMiddleware,
   async (req, res) => {
-    //funky town (funca)
 
     const userId = req.id;
     const eventId = req.params.id;
@@ -246,7 +243,6 @@ eventoController.delete(
   "/:id/enrollment",
   middleware.userMiddleware,
   async (req, res) => {
-    //anda
     const userId = req.id;
     const eventId = req.params.id;
 
@@ -268,7 +264,6 @@ eventoController.patch(
   "/:id/enrollment/:rating",
   middleware.userMiddleware,
   async (req, res) => {
-    //funciona
 
     const rating = req.params.rating;
     const userId = req.id;

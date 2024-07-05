@@ -14,7 +14,7 @@ const middleware=new Middleware
 
 
 
-provinciaController.get("/", middleware.pagination,async (req, res) => { //anda por su puesto
+provinciaController.get("/", middleware.pagination,async (req, res) => { 
   const pageSize = req.limit
   const offset = req.offset
 
@@ -38,7 +38,7 @@ provinciaController.get("/", middleware.pagination,async (req, res) => { //anda 
 })
 
 
-provinciaController.get("/:id", async (req, res) => { //san martin de los anda
+provinciaController.get("/:id", async (req, res) => {
   
   let id = Number(req.params.id)
 
@@ -55,7 +55,7 @@ provinciaController.get("/:id", async (req, res) => { //san martin de los anda
 
 })
 
-provinciaController.get("/:id/locations",middleware.pagination, async (req,res) =>{ //anda te de vacaciones
+provinciaController.get("/:id/locations",middleware.pagination, async (req,res) =>{
 
   const pageSize = req.limit
   const page = req.offset
@@ -82,7 +82,7 @@ provinciaController.get("/:id/locations",middleware.pagination, async (req,res) 
 })
 
 
-provinciaController.post("/", async (req, res) => {  //punpiona
+provinciaController.post("/", async (req, res) => {  
 
   try{
     let provincia = new Provinces()
@@ -103,7 +103,7 @@ provinciaController.post("/", async (req, res) => {  //punpiona
 
 })
 
-provinciaController.put("/", async (req, res) => { //che dire straits, esto funciona? dire straits: we are the sultans of si
+provinciaController.put("/", async (req, res) => { 
     try{
       const provincia = new Provinces()
 

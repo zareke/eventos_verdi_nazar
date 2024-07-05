@@ -7,14 +7,9 @@ import sql from 'mssql'
 
 export default class Eventos {
   getAllEventos = async (pageSize, offset) => {
-    
-  
-    
     const eventrepo = new EventsRepository();
-    let [returnEntity,total]= await eventrepo.getAllEvents(pageSize,offset)
-    
-    
-    return [returnEntity,total]
+    let [returnEntity, total] = await eventrepo.getAllEvents(pageSize, offset);
+    return [returnEntity, total];
   }
 
   

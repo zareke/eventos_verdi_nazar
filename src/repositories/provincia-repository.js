@@ -73,25 +73,21 @@ export default class ProvinciaRepository {
   }
   async DeleteProvincia(id) {
     try {
-      // Delete related entities (e.g., localidades)
       await this.finishDeleteProvinciaCascade(id);
   
-      // Delete the provincia itself
       const sql = 'DELETE FROM provinces WHERE id=$1';
       const res = await this.DBClient.query(sql, [id]);
   
       return res;
     } catch (e) {
       console.error("Error al borrar provincia:", e);
-      throw e; // Rethrow the error to handle it in the controller or service layer
+      
     }
   }
   async finishDeleteProvinciaCascade(id) {
     try {
-      // Start a transaction
-      await this.DBClient.query('BEGIN');
+      await this.DBClient.query('BEGIN'); //esto hace uqe lo siguiente o se ejecute o no haga nada si hay algun error
   
-      // Delete event_enrollments related to events in the province
       const deleteEnrollmentsSql = `
         DELETE FROM event_enrollments
         WHERE id_event IN (
@@ -103,7 +99,6 @@ export default class ProvinciaRepository {
         )`;
       await this.DBClient.query(deleteEnrollmentsSql, [id]);
   
-      // Delete event_tags related to events in the province
       const deleteEventTagsSql = `
         DELETE FROM event_tags
         WHERE id_event IN (
@@ -115,7 +110,6 @@ export default class ProvinciaRepository {
         )`;
       await this.DBClient.query(deleteEventTagsSql, [id]);
   
-      // Delete events related to locations in the province
       const deleteEventsSql = `
         DELETE FROM events
         WHERE id_event_location IN (
@@ -126,7 +120,6 @@ export default class ProvinciaRepository {
         )`;
       await this.DBClient.query(deleteEventsSql, [id]);
   
-      // Delete event_locations related to locations in the province
       const deleteEventLocationsSql = `
         DELETE FROM event_locations
         WHERE id_location IN (
@@ -134,18 +127,16 @@ export default class ProvinciaRepository {
         )`;
       await this.DBClient.query(deleteEventLocationsSql, [id]);
   
-      // Delete locations in the province
       const deleteLocationsSql = "DELETE FROM locations WHERE id_province = $1";
       await this.DBClient.query(deleteLocationsSql, [id]);
   
-      // Commit the transaction
-      await this.DBClient.query('COMMIT');
+      
+      await this.DBClient.query('COMMIT'); //final del bloque
   
     } catch (error) {
-      // If there's an error, roll back the transaction
-      await this.DBClient.query('ROLLBACK');
+      await this.DBClient.query('ROLLBACK'); //esto esta re bueno no sabia que se podia hacer rollback
       console.error("Error al borrar cascada de provincia:", error);
-      throw error; // Rethrow the error to handle it in the higher layers
+      
     }
   }
 

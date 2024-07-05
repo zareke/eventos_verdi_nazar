@@ -92,7 +92,7 @@ async isCreatorUser(idUser,idEventLocation){
 
 async updateEventLocation(eventLocation){
     try{
-        //si algun valor es null no se cambia
+        //si algun valor es null no se cambia eso hace coalesce
         const sql=`UPDATE event_locations 
         SET 
             id_location = COALESCE($1, id_location),

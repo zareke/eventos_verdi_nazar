@@ -6,7 +6,7 @@ import Middleware from '../../middleware.js'
 import event_category from "../models/event_categories.js";
 const middleware=new Middleware
 
-categoryController.get("/",middleware.pagination,async (req,res) => { //como no va a funcionar :v
+categoryController.get("/",middleware.pagination,async (req,res) => { 
     
     const pageSize = req.limit
     const page = req.offset
@@ -28,7 +28,7 @@ categoryController.get("/",middleware.pagination,async (req,res) => { //como no 
 })
 
 
-categoryController.get("/:id",async (req,res) => { //y mas vale que anda
+categoryController.get("/:id",async (req,res) => { 
 
     const catId = req.params.id
     let category  = await categoryService.getCategoryById(catId)
@@ -41,7 +41,7 @@ categoryController.get("/:id",async (req,res) => { //y mas vale que anda
     }
 })
 
-categoryController.post("/",async (req,res) => { //pues claro que funciona
+categoryController.post("/",async (req,res) => { 
     let category = new event_category()
     category.name = req.body.name
     category.display_order = Number(req.body.display_order)
@@ -58,11 +58,11 @@ categoryController.post("/",async (req,res) => { //pues claro que funciona
 })
 
 
-categoryController.put("/", async (req, res) => { //perfect
+categoryController.put("/", async (req, res) => { 
   try {
     const updatedCategory = new event_category();
 
-    // Validate input
+    
     if (req.body.name == null || req.body.name.length < 3) {
       throw new Error("El nombre no es valido");
     }
@@ -86,7 +86,7 @@ categoryController.put("/", async (req, res) => { //perfect
 });
 
 
-categoryController.delete("/:id",async (req,res) => { //anda
+categoryController.delete("/:id",async (req,res) => { 
     const id=req.params.id
 
     let result = await categoryService.deleteCategory(id)
