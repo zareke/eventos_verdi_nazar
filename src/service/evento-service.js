@@ -117,5 +117,9 @@ export default class Eventos {
     const eventrepo = new EventsRepository()
     await eventrepo.PatchEventEnrollment(enrollment)
   }
+  async getEnrollmentByEvent(event,filters,size,page){
+    const eventrepo = new EventsRepository()
+    return await eventrepo.getEnrollmentByEvent(event,filters,size,page)
+  }
   
 }

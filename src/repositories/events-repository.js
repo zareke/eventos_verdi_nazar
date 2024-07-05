@@ -24,70 +24,159 @@ export default class EventRepository {
     try {
         const values = [size, offset];
         const countValues = [];
-        
+        /*
+      distictn esta para evitar duplicados de los joins
+
+      left joins para tags, permitiendo eventos sin tags.
+
+      % (% representa cualquier caracteres osea si buscas %tay%, encontras "Taylor", "Emasdtayldfs", etc)
+
+      order by ev.id para un orden lindo.
+
+      parseInt() para asegurar que el total sea un número.*/
         let sql = `
-            SELECT ev.*, evca.name as category, tg.name as tag_name 
+            SELECT DISTINCT ev.*, evca.name as category
             FROM events ev 
             INNER JOIN event_categories evca ON ev.id_event_category = evca.id 
-            INNER JOIN event_tags evtg ON id_event = ev.id 
-            INNER JOIN tags tg ON evtg.id_tag = tg.id 
+            LEFT JOIN event_tags evtg ON ev.id = evtg.id_event 
+            LEFT JOIN tags tg ON evtg.id_tag = tg.id 
             WHERE 1=1`;
 
         let sql2 = `
-            SELECT COUNT(*) 
+            SELECT COUNT(DISTINCT ev.id) 
             FROM events ev 
             INNER JOIN event_categories evca ON ev.id_event_category = evca.id 
-            INNER JOIN event_tags evtg ON id_event = ev.id 
-            INNER JOIN tags tg ON evtg.id_tag = tg.id 
+            LEFT JOIN event_tags evtg ON ev.id = evtg.id_event 
+            LEFT JOIN tags tg ON evtg.id_tag = tg.id 
             WHERE 1=1`;
 
-        if (eventFilters.nombre !== undefined) {
-            values.push(eventFilters.nombre);
-            countValues.push(eventFilters.nombre);
-            sql += ` AND ev.name = $${values.length}`;
-            sql2 += ` AND ev.name = $${countValues.length}`;
+        if (eventFilters.nombre) {
+            values.push(`%${eventFilters.nombre}%`);
+            countValues.push(`%${eventFilters.nombre}%`);
+            sql += ` AND ev.name LIKE $${values.length}`;
+            sql2 += ` AND ev.name LIKE $${countValues.length}`;
         }
         
-        if (eventFilters.categoria !==undefined) {
-            values.push(eventFilters.categoria);
-            countValues.push(eventFilters.categoria);
-            sql += ` AND evca.name = $${values.length}`;
-            sql2 += ` AND evca.name = $${countValues.length}`;
+        if (eventFilters.categoria) {
+            values.push(`%${eventFilters.categoria}%`);
+            countValues.push(`%${eventFilters.categoria}%`);
+            sql += ` AND evca.name LIKE $${values.length}`;
+            sql2 += ` AND evca.name LIKE $${countValues.length}`;
         }
 
-        if (eventFilters.fechaDeInicio !== undefined && eventFilters.fechaDeInicio !== null) {
-            values.push(eventFilters.fechaDeInicio);
-            countValues.push(eventFilters.fechaDeInicio);
-            sql += ` AND ev.fecha_de_inicio = $${values.length}`;
-            sql2 += ` AND ev.fecha_de_inicio = $${countValues.length}`;
+        if (eventFilters.fechaDeInicio) {
+          // Convertimos la fecha de string a objeto Date
+          const fecha = new Date(eventFilters.fechaDeInicio);
+          
+          // Creamos dos fechas: una para el inicio del día y otra para el final
+          const fechaInicio = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
+          const fechaFin = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate() + 1);
+      
+          values.push(fechaInicio.toISOString(), fechaFin.toISOString());
+          countValues.push(fechaInicio.toISOString(), fechaFin.toISOString());
+          
+          sql += ` AND ev.start_date >= $${values.length - 1} AND ev.start_date < $${values.length}`;
+          sql2 += ` AND ev.start_date >= $${countValues.length - 1} AND ev.start_date < $${countValues.length}`;
+      }
+
+        if (eventFilters.tag) {
+            values.push(`%${eventFilters.tag}%`);
+            countValues.push(`%${eventFilters.tag}%`);
+            sql += ` AND tg.name LIKE $${values.length}`;
+            sql2 += ` AND tg.name LIKE $${countValues.length}`;
         }
 
-        if (eventFilters.tag !== undefined) {
-            values.push(eventFilters.tag);
-            countValues.push(eventFilters.tag);
-            sql += ` AND tg.name = $${values.length}`;
-            sql2 += ` AND tg.name = $${countValues.length}`;
-        }
+        sql += ` ORDER BY ev.id LIMIT $1 OFFSET $2`;
 
-        sql += ` LIMIT $1 OFFSET $2`;
-
-        
         const eventos = await this.DBClient.query(sql, values);
-        
         const totalResult = await this.DBClient.query(sql2, countValues);
-        const total = totalResult.rows[0].count;
+        const total = parseInt(totalResult.rows[0].count);
+
         return [eventos, total];
     } catch (error) {
         console.error("Error al filtrar los eventos: ", error);
+        throw error;
+    }
+}
+
+  async getEnrollmentByEvent(idEvent, filters,size,page) {
+    try {
+      let sql = `SELECT json_agg(
+    json_build_object(
+        'id', ee.id,
+        'id_event', ee.id_event,
+        'id_user', ee.id_user,
+        'user', json_build_object(
+            'id', u.id,
+            'first_name', u.first_name,
+            'last_name', u.last_name,
+            'username', u.username
+        ),
+        'description', ee.description,
+        'registration_date_time', ee.registration_date_time,
+        'attended', ee.attended,
+        'observations', ee.observations,
+        'rating', ee.rating
+    )
+) AS event_enrollments
+FROM event_enrollments ee
+INNER JOIN users u ON ee.id_user = u.id
+WHERE ee.id_event = $1
+`
+      let sql2 = "SELECT count(*) FROM event_enrollments ee inner join users u on ee.id_user = u.id WHERE ee.id_event=$1"
+      let values = [idEvent,size,page]
+      let countValues=[idEvent]
+      if (filters.first_name) {
+        values.push(`%${filters.first_name}%`);
+        countValues.push(`%${filters.first_name}%`);
+        sql += ` AND u.first_name ILIKE $${values.length}`;
+        sql2 += ` AND u.first_name ILIKE $${countValues.length}`;
+      }
+
+      if (filters.last_name) {
+        values.push(`%${filters.last_name}%`);
+        countValues.push(`%${filters.last_name}%`);
+        sql += ` AND u.last_name ILIKE $${values.length}`;
+        sql2 += ` AND u.last_name ILIKE $${countValues.length}`;
+      }
+
+      if (filters.username) {
+        values.push(`%${filters.username}%`);
+        countValues.push(`%${filters.username}%`);
+        sql += ` AND u.username ILIKE $${values.length}`;
+        sql2 += ` AND u.username ILIKE $${countValues.length}`;
+      }
+      if (filters.attended !== null && filters.attended !== undefined) {
+        values.push(`${filters.attended}`);
+        countValues.push(`${filters.attended}`);
+        sql += ` AND ee.attended = $${values.length}`;
+        sql2 += ` AND ee.attended = $${countValues.length}`;
+      }
+      if (filters.rating) {
+        values.push(`${filters.rating}`);
+        countValues.push(`${filters.rating}`);
+        sql += ` AND ee.rating = $${values.length}`;
+        sql2 += ` AND ee.rating = $${countValues.length}`;
+      }
+      sql += ` LIMIT $2 OFFSET $3`;
+
+        const registraciones = await this.DBClient.query(sql, values);
+        const totalResult = await this.DBClient.query(sql2, countValues);
+        const total = parseInt(totalResult.rows[0].count);
+
+        return [registraciones.rows, total];
+      
+
+    }
+    catch (e) {
+      console.error("Error al buscar registro de evento: ", e)
     }
   }
 
 
-
-
   async getEventById(id) {
     try {
-      const values = [id]; 
+      const values = [id];
       //query que hizo claudio que une todas las tablas
       const sql = `SELECT 
         e.id, e.name, e.description, e.id_event_category, e.id_event_location, 
@@ -163,7 +252,7 @@ export default class EventRepository {
     }
   }
 
-  async postEvent(evento) {
+  async Event(evento) {
     try {
       const values = [
         evento.name,
@@ -222,7 +311,7 @@ export default class EventRepository {
       console.error("error al checkear si esta alguien enrolled?");
     }
   }
-  async finishDeleteEventCascade(id){
+  async finishDeleteEventCascade(id) {
     try {
       let values = [id];
 
@@ -230,7 +319,7 @@ export default class EventRepository {
       await this.DBClient.query(sql, values);
     } catch (error) {
       console.error("error al borrar evento: ", error);
-    } 
+    }
   }
   async deleteEvent(id) {
     try {
@@ -238,13 +327,13 @@ export default class EventRepository {
       await this.finishDeleteEventCascade(id)
       const sql = "delete from events where id=$1";
       const deleted = await this.DBClient.query(sql, values);
-      
+
       return deleted;
     } catch (error) {
       console.error("error al borrar evento: ", error);
     }
   }
- 
+
   async getMaxCapacity(idlocation) {
     try {
       const values = [idlocation];

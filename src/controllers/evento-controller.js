@@ -5,18 +5,12 @@ import event_enrollment from "../models/event_enrollments.js";
 import Middleware from "../../middleware.js";
 import EventRepository from "../repositories/events-repository.js";
 import Events from "../models/events.js";
+import User from "../models/users.js";
 
 const eventoService = new Eventos();
 const middleware = new Middleware();
 
 eventoController.get("/", middleware.pagination, async (req, res) => {
-  //get all eventos filtrado no funciona y deberia devolver TODOS los datos del evento de otras tablas tambien
-
-  let allEvents;
-  const pageSize = req.limit;
-  const offset = req.offset;
-  let total;
-
   let filtros = {
     nombre: "",
     categoria: "",
@@ -28,35 +22,48 @@ eventoController.get("/", middleware.pagination, async (req, res) => {
   filtros.categoria = req.query.category;
   filtros.tag = req.query.tag;
   
-  if (req.query.startDate != undefined) {
-    if (!isNaN(Date.parse(req.query.startDate))) {
-      filtros.fechaDeInicio = req.query.startDate;
-    } else return res.status(400).json("Fecha invalida");
-  }
-  filtros.fechaDeInicio = null;
-  if (Object.values(filtros).some((i) => i != null)) {
-    [allEvents, total] = await eventoService.getAllEventosFiltrado(
-      pageSize,
-      offset,
-      filtros
+  if (req.query.startDate) {
+    try {
+        const fecha = new Date(req.query.startDate);
+        if (isNaN(fecha.getTime())) {
+            return res.status(400).json("Fecha inválida");
+        }
+        // Formatear la fecha a ISO string
+        filtros.fechaDeInicio = fecha.toISOString();
+    } catch (error) {
+        return res.status(400).json("Formato de fecha inválido");
+    }
+}
+
+  const pageSize = req.limit;
+  const offset = req.offset;
+
+  try {
+    let allEvents, total;
+    if (Object.values(filtros).some(i => i !== "")) {
+      [allEvents, total] = await eventoService.getAllEventosFiltrado(
+        pageSize,
+        offset,
+        filtros
       );
     } else {
       [allEvents, total] = await eventoService.getAllEventos(pageSize, offset);
     }
     
     res.locals.pagination.total = total;
-    if (
-      Number(res.locals.pagination.page) * Number(res.locals.pagination.limit) >=
-      total
-      ) {
-        res.locals.pagination.nextPage = null;
-      }
+    if (Number(res.locals.pagination.page) * Number(res.locals.pagination.limit) >= total) {
+      res.locals.pagination.nextPage = null;
+    }
       
-      const response = {
-        collection: allEvents.rows,
-        pagination: res.locals.pagination,
-  };
-  return res.status(200).json(response);
+    const response = {
+      collection: allEvents.rows,
+      pagination: res.locals.pagination,
+    };
+    return res.status(200).json(response);
+  } catch (error) {
+    console.error("Error al obtener eventos:", error);
+    return res.status(500).json("Error interno del servidor");
+  }
 });
 
 eventoController.get("/:id", async (req, res) => {
@@ -169,6 +176,34 @@ eventoController.delete("/:id", middleware.userMiddleware, async (req, res) => {
       .json("Ese evento no existe o no fue creado por el usuario identificado");
   }
 });
+
+eventoController.get("/:id/enrollment",middleware.pagination, async (req,res) =>{
+  const eventId = req.params.id
+  let attended1 = req.query.attended
+  if (attended1 !== undefined){
+    attended1 = attended1 === 'true'.toLowerCase() ? true : false
+  }
+  let filters ={
+  first_name:req.query.first_name,
+  last_name:req.query.last_name,
+  username:req.query.username,
+  attended : attended1,
+  rating : req.query.rating
+  }
+  const [enrollments,total] = await eventoService.getEnrollmentByEvent(eventId,filters,req.limit,req.offset)
+  
+  res.locals.pagination.total = total;
+    if ( Number(res.locals.pagination.page) * Number(res.locals.pagination.limit) >= total) {
+        res.locals.pagination.nextPage = null;
+      }
+      
+      const response = {
+        collection: enrollments,
+        pagination: res.locals.pagination,
+  };
+  return res.status(200).json(response);
+  
+})
 
 eventoController.post(
   "/:id/enrollment",
