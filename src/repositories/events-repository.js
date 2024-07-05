@@ -99,20 +99,78 @@ export default class EventRepository {
 
       parseInt() para asegurar que el total sea un número.*/
         let sql = `
-            SELECT DISTINCT ev.*, evca.name as category
-            FROM events ev 
-            INNER JOIN event_categories evca ON ev.id_event_category = evca.id 
-            LEFT JOIN event_tags evtg ON ev.id = evtg.id_event 
-            LEFT JOIN tags tg ON evtg.id_tag = tg.id 
-            WHERE 1=1`;
+      SELECT JSON_AGG(
+        JSON_BUILD_OBJECT(
+          'id', ev.id,
+          'name', ev.name,
+          'description', ev.description,
+          'event_category', JSON_BUILD_OBJECT(
+            'id', evca.id,
+            'name', evca.name
+          ),
+          'event_location', JSON_BUILD_OBJECT(
+            'id', el.id,
+            'name', el.name,
+            'full_address', el.full_address,
+            'latitude', el.latitude,
+            'longitude', el.longitude,
+            'max_capacity', el.max_capacity,
+            'location', JSON_BUILD_OBJECT(
+              'id', l.id,
+              'name', l.name,
+              'latitude', l.latitude,
+              'longitude', l.longitude,
+              'province', JSON_BUILD_OBJECT(
+                'id', p.id,
+                'name', p.name,
+                'full_name', p.full_name,
+                'latitude', p.latitude,
+                'longitude', p.longitude,
+                'display_order', p.display_order
+              )
+            )
+          ),
+          'start_date', ev.start_date,
+          'duration_in_minutes', ev.duration_in_minutes,
+          'price', ev.price,
+          'enabled_for_enrollment', ev.enabled_for_enrollment,
+          'max_assistance', ev.max_assistance,
+          'creator_user', JSON_BUILD_OBJECT(
+            'id', u.id,
+            'username', u.username,
+            'first_name', u.first_name,
+            'last_name', u.last_name
+          ),
+          'tags', (
+            SELECT JSON_AGG(
+              JSON_BUILD_OBJECT(
+                'id', t.id,
+                'name', t.name
+              )
+            )
+            FROM event_tags et
+            JOIN tags t ON et.id_tag = t.id
+            WHERE et.id_event = ev.id
+          )
+        )
+      ) AS events
+      FROM events ev
+      inner JOIN event_categories evca ON ev.id_event_category = evca.id
+      inner JOIN event_locations el ON ev.id_event_location = el.id
+      inner JOIN locations l ON el.id_location = l.id
+      inner JOIN provinces p ON l.id_province = p.id
+      inner JOIN users u ON ev.id_creator_user = u.id
+      where 1=1
+
+    `;
 
         let sql2 = `
-            SELECT COUNT(DISTINCT ev.id) 
-            FROM events ev 
-            INNER JOIN event_categories evca ON ev.id_event_category = evca.id 
-            LEFT JOIN event_tags evtg ON ev.id = evtg.id_event 
-            LEFT JOIN tags tg ON evtg.id_tag = tg.id 
-            WHERE 1=1`;
+        SELECT COUNT(DISTINCT ev.id) 
+        FROM events ev 
+        INNER JOIN event_categories evca ON ev.id_event_category = evca.id 
+        LEFT JOIN event_tags evtg ON ev.id = evtg.id_event 
+        LEFT JOIN tags tg ON evtg.id_tag = tg.id 
+        WHERE 1=1`;
 
         if (eventFilters.nombre) {
             values.push(`%${eventFilters.nombre}%`);
@@ -138,11 +196,11 @@ export default class EventRepository {
         if (eventFilters.tag) {
             values.push(`%${eventFilters.tag}%`);
             countValues.push(`%${eventFilters.tag}%`);
-            sql += ` AND tg.name ILIKE $${values.length}`;
-            sql2 += ` AND tg.name ILIKE $${countValues.length}`;
+            sql += ` AND t.name ILIKE $${values.length}`;
+            sql2 += ` AND t.name ILIKE $${countValues.length}`;
         }
 
-        sql += ` ORDER BY ev.id LIMIT $1 OFFSET $2`;
+        sql += ` LIMIT $1 OFFSET $2`;
 
         const eventos = await this.DBClient.query(sql, values);
         const totalResult = await this.DBClient.query(sql2, countValues);
