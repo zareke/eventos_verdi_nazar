@@ -39,7 +39,7 @@ if (req.query.startDate) {
 
   try {
     let allEvents, total;
-    if (Object.values(filtros).some(i => i !== "")) {
+    if (Object.values(filtros).some(i => i !== "" && i!==undefined)) {
       [allEvents, total] = await eventoService.getAllEventosFiltrado(
         pageSize,
         offset,
@@ -60,7 +60,6 @@ if (req.query.startDate) {
     };
     return res.status(200).json(response);
   } catch (error) {
-    console.error("Error al obtener eventos:", error);
     return res.status(500).json("Error interno del servidor");
   }
 });
@@ -95,12 +94,13 @@ eventoController.post("/", middleware.userMiddleware, async (req, res) => {
       evento.max_assistance
     )
       throw new Error("Capacidad maxima de personas exedida");
-    evento.price = req.body.price;
-    evento.duration_in_minutes = req.body.duration_in_minutes;
 
-    if (evento.price <= 0 || evento.duration_in_minutes <= 0)
+      evento.price = req.body.price;
+      evento.duration_in_minutes = req.body.duration_in_minutes;
+      
+      if (evento.price <= 0 || evento.duration_in_minutes <= 0)
       throw new Error("Precio o duracion no validos");
-
+    
     evento.enabled_for_enrollment = req.body.enabled_for_enrollment;
     evento.id_creator_user = req.id;
     evento.id_event_category = req.body.id_event_category;
@@ -111,15 +111,16 @@ eventoController.post("/", middleware.userMiddleware, async (req, res) => {
 
     return res.status(201).json("Evento creado");
   } catch (error) {
+    console.error(error)
     return res.status(400).json("Datos no validos");
   }
 });
 
-eventoController.put("/:id", middleware.userMiddleware, async (req, res) => {
+eventoController.put("/", middleware.userMiddleware, async (req, res) => {
   
   try {
     let evento = new Events();
-    evento.id = req.params.id;
+    evento.id = req.body.id;
     if (!eventoService.eventoExists(evento.id))
       return res.status(404).json("El evento no existe");
 
@@ -197,7 +198,7 @@ eventoController.get("/:id/enrollment",middleware.pagination, async (req,res) =>
       
       const response = {
         collection: enrollments,
-        pagination: res.locals.pagination,
+        pagination: res.locals.pagination
   };
   return res.status(200).json(response);
   

@@ -9,7 +9,71 @@ export default class EventRepository {
   }
   async getAllEvents(limit, offset) {
     try {
-      const sql = "SELECT * FROM events OFFSET $1 LIMIT $2;";
+      const sql = `
+      SELECT JSON_AGG(
+        JSON_BUILD_OBJECT(
+          'id', e.id,
+          'name', e.name,
+          'description', e.description,
+          'event_category', JSON_BUILD_OBJECT(
+            'id', ec.id,
+            'name', ec.name
+          ),
+          'event_location', JSON_BUILD_OBJECT(
+            'id', el.id,
+            'name', el.name,
+            'full_address', el.full_address,
+            'latitude', el.latitude,
+            'longitude', el.longitude,
+            'max_capacity', el.max_capacity,
+            'location', JSON_BUILD_OBJECT(
+              'id', l.id,
+              'name', l.name,
+              'latitude', l.latitude,
+              'longitude', l.longitude,
+              'province', JSON_BUILD_OBJECT(
+                'id', p.id,
+                'name', p.name,
+                'full_name', p.full_name,
+                'latitude', p.latitude,
+                'longitude', p.longitude,
+                'display_order', p.display_order
+              )
+            )
+          ),
+          'start_date', e.start_date,
+          'duration_in_minutes', e.duration_in_minutes,
+          'price', e.price,
+          'enabled_for_enrollment', e.enabled_for_enrollment,
+          'max_assistance', e.max_assistance,
+          'creator_user', JSON_BUILD_OBJECT(
+            'id', u.id,
+            'username', u.username,
+            'first_name', u.first_name,
+            'last_name', u.last_name
+          ),
+          'tags', (
+            SELECT JSON_AGG(
+              JSON_BUILD_OBJECT(
+                'id', t.id,
+                'name', t.name
+              )
+            )
+            FROM event_tags et
+            JOIN tags t ON et.id_tag = t.id
+            WHERE et.id_event = e.id
+          )
+        )
+      ) AS events
+      FROM events e
+      inner JOIN event_categories ec ON e.id_event_category = ec.id
+      inner JOIN event_locations el ON e.id_event_location = el.id
+      inner JOIN locations l ON el.id_location = l.id
+      inner JOIN provinces p ON l.id_province = p.id
+      inner JOIN users u ON e.id_creator_user = u.id
+      
+      OFFSET $1 LIMIT $2;
+    `
       const eventos = await this.DBClient.query(sql, [offset, limit]);
 
       const sql2 = "SELECT * FROM events";
@@ -147,8 +211,8 @@ WHERE ee.id_event = $1
       if (filters.rating) {
         values.push(`${filters.rating}`);
         countValues.push(`${filters.rating}`);
-        sql += ` AND ee.rating = $${values.length}`;
-        sql2 += ` AND ee.rating = $${countValues.length}`;
+        sql += ` AND ee.rating > $${values.length}`;
+        sql2 += ` AND ee.rating > $${countValues.length}`;
       }
       sql += ` LIMIT $2 OFFSET $3`;
 
@@ -243,7 +307,7 @@ WHERE ee.id_event = $1
     }
   }
 
-  async Event(evento) {
+  async postEvent(evento) {
     try {
       const values = [
         evento.name,

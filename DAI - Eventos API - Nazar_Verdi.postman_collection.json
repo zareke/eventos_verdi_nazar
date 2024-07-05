@@ -1,9 +1,8 @@
 {
 	"info": {
-		"_postman_id": "abacf6de-4a52-4425-a8d8-70e58ea49d95",
+		"_postman_id": "cc27a1e0-514a-481a-bb7d-51b049fe9691",
 		"name": "DAI - Eventos API - Nazar_Verdi",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "34561705"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
@@ -163,7 +162,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:4587/event/2/enrollment?limit=10&page=1&first_name=ZAR&last_name=verdi&username=ZAR&attended=true&rating=10",
+									"raw": "http://localhost:4587/event/2/enrollment?limit=10&page=1&rating=3",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -185,23 +184,27 @@
 										},
 										{
 											"key": "first_name",
-											"value": "ZAR"
+											"value": "ZAR",
+											"disabled": true
 										},
 										{
 											"key": "last_name",
-											"value": "verdi"
+											"value": "verdi",
+											"disabled": true
 										},
 										{
 											"key": "username",
-											"value": "ZAR"
+											"value": "ZAR",
+											"disabled": true
 										},
 										{
 											"key": "attended",
-											"value": "true"
+											"value": "true",
+											"disabled": true
 										},
 										{
 											"key": "rating",
-											"value": "10"
+											"value": "3"
 										}
 									]
 								}
@@ -330,7 +333,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\":\"Ruben rada 80 años\",\r\n    \"description\":\"el cumpleaños de ruben rada 80 años\",\r\n    \"max_assistance\":2000,\r\n    \"id_event_location\":1,\r\n    \"price\":200,\r\n    \"duration_in_minutes\":60,\r\n    \"enabled_for_enrollment\":true,\r\n    \"id_event_category\":1,\r\n    \"start_date\":\"2024-07-29 00:00:00\"\r\n}",
+							"raw": "{\r\n    \"id\":1,\r\n    \"name\":\"Ruben rada 80 años\",\r\n    \"description\":\"el cumpleaños de ruben rada 80 años\",\r\n    \"max_assistance\":2000,\r\n    \"id_event_location\":1,\r\n    \"price\":200,\r\n    \"duration_in_minutes\":60,\r\n    \"enabled_for_enrollment\":true,\r\n    \"id_event_category\":1,\r\n    \"start_date\":\"2024-07-29 00:00:00\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -338,7 +341,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:4587/event/1",
+							"raw": "http://localhost:4587/event/",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -346,7 +349,7 @@
 							"port": "4587",
 							"path": [
 								"event",
-								"1"
+								""
 							]
 						}
 					},
@@ -867,7 +870,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiaWF0IjoxNzE5NjE1MzQwLCJleHAiOjE3MTk3ODgxNDAsImlzcyI6ImhhbmdvdmVyIn0.CTL1LuNgVJpNN9mB_Onmhx3pFdTuIyElELrT0jMpJZo",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzIwMTc4MDUxLCJleHAiOjE3MjAzNTA4NTEsImlzcyI6ImhhbmdvdmVyIn0.8V5z8-IOBgv34fUQmsvCDbF9OxJkqqm6mojw3FQqFXk",
 				"type": "string"
 			}
 		]
